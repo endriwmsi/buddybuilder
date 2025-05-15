@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const VALID_DOMAINS = () => {
+export const getValidDomains = () => {
   const domains = [
     "gmail.com",
     "outlook.com",
@@ -19,4 +19,12 @@ export const VALID_DOMAINS = () => {
   }
 
   return domains;
+};
+
+export const normalizeName = (name: string) => {
+  return name
+    .trim()
+    .replace(/\s+g/g, " ")
+    .replace(/[^a-zA-Z\s'-]/g, "")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 };
