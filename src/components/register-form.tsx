@@ -1,5 +1,6 @@
 "use client";
 
+import { signUpEmailAction } from "@/actions/sign-up-email.action";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,14 +10,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUp } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const registerSchema = z.object({
+export const registerSchema = z.object({
   email: z.string().email().min(2, {
     message: "Você deve fornecer um e-mail válido.",
   }),
@@ -29,7 +30,8 @@ const registerSchema = z.object({
 });
 
 const RegisterForm = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   const formData = useForm({
     resolver: zodResolver(registerSchema),
@@ -41,26 +43,15 @@ const RegisterForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
-    setIsLoading(true);
+    setIsPending(true);
 
-    try {
-      await signUp.email(
-        {
-          ...formData.getValues(),
-        },
-        {
-          onRequest: () => {},
-          onResponse: () => {},
-          onError: (ctx) => {
-            toast.error(ctx.error.message);
-          },
-          onSuccess: () => {},
-        }
-      );
-    } catch (error) {
-      toast.error("Erro ao cadastrar usuário");
-    } finally {
-      setIsLoading(false);
+    const { error } = await signUpEmailAction(values);
+
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success("Usuário cadastrado com sucesso");
+      router.push("/auth/login");
     }
   };
 
@@ -84,7 +75,7 @@ const RegisterForm = () => {
                       placeholder="nome@exemplo.com"
                       type="email"
                       autoComplete="email"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -106,7 +97,7 @@ const RegisterForm = () => {
                       placeholder="João da Silva"
                       type="text"
                       autoComplete="name"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -127,7 +118,7 @@ const RegisterForm = () => {
                       id="password"
                       placeholder="********"
                       type="password"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -135,8 +126,8 @@ const RegisterForm = () => {
               )}
             />
 
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && <span>loading...</span>}
+            <Button type="submit" disabled={isPending}>
+              {isPending && <span>loading...</span>}
               Entrar com e-mail
             </Button>
           </div>

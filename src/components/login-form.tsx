@@ -1,5 +1,6 @@
 "use client";
 
+import { signInEmailAction } from "@/actions/sign-in-email.action";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,14 +10,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const loginSchema = z.object({
+export const loginSchema = z.object({
   email: z.string().email("Você deve inserir um e-mail válido."),
   password: z.string().min(8, {
     message: "A senha deve ter pelo menos 8 caracteres.",
@@ -24,7 +25,8 @@ const loginSchema = z.object({
 });
 
 const LoginForm = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPending, setIsPending] = useState<boolean>(false);
+  const router = useRouter();
 
   const formData = useForm({
     resolver: zodResolver(loginSchema),
@@ -35,26 +37,15 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    setIsLoading(true);
+    setIsPending(true);
 
-    try {
-      await signIn.email(
-        {
-          ...formData.getValues(),
-        },
-        {
-          onRequest: () => {},
-          onResponse: () => {},
-          onError: (ctx) => {
-            toast.error(ctx.error.message);
-          },
-          onSuccess: () => {},
-        }
-      );
-    } catch (error) {
-      toast.error("Erro ao fazer Login");
-    } finally {
-      setIsLoading(false);
+    const { error } = await signInEmailAction(values);
+
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success("Sessão iniciada com sucesso. Seja bem-vindo de volta!");
+      router.push("/dashboard");
     }
   };
 
@@ -78,7 +69,7 @@ const LoginForm = () => {
                       placeholder="nome@exemplo.com"
                       type="email"
                       autoComplete="email"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -99,7 +90,7 @@ const LoginForm = () => {
                       id="password"
                       placeholder="********"
                       type="password"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -107,8 +98,8 @@ const LoginForm = () => {
               )}
             />
 
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && <span>loading</span>}
+            <Button type="submit" disabled={isPending}>
+              {isPending && <span>loading</span>}
               Entrar com e-mail
             </Button>
           </div>
