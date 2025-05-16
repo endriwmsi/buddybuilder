@@ -50,8 +50,10 @@ const RegisterForm = () => {
     if (error) {
       toast.error(error);
     } else {
-      toast.success("Usuário cadastrado com sucesso");
-      router.push("/auth/login");
+      toast.success(
+        "Usuário cadastrado com sucesso. Por favor, verifique seu e-mail para continuar."
+      );
+      router.push("/auth/register/success");
     }
   };
 

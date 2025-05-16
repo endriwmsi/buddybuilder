@@ -14,10 +14,6 @@ export const getValidDomains = () => {
     "icloud.com",
   ];
 
-  if (process.env.NODE_ENV === "development") {
-    domains.push("example.com");
-  }
-
   return domains;
 };
 
