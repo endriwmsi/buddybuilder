@@ -3,8 +3,33 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import LoginForm from "@/components/login-form";
+import { signIn } from "@/lib/auth-client";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Icons } from "@/components/icons";
 
 const LoginPage = () => {
+  const [isPending, setIsPending] = useState(false);
+
+  const handleLoginWithGoogle = async () => {
+    await signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+      errorCallbackURL: "/auth/login/error",
+      fetchOptions: {
+        onRequest: () => {
+          setIsPending(true);
+        },
+        onResponse: () => {
+          setIsPending(false);
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
+      },
+    });
+  };
+
   return (
     <div className="lg:p-8">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -39,8 +64,9 @@ const LoginPage = () => {
           <Button
             variant="outline"
             type="button"
-            // onClick={handleLoginWithGoogle}
+            onClick={handleLoginWithGoogle}
           >
+            <Icons.google className="h-4 w-4" />
             Google
           </Button>
         </div>

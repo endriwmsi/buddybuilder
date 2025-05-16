@@ -1,10 +1,35 @@
 "use client";
 
+import { Icons } from "@/components/icons";
 import RegisterForm from "@/components/register-form";
 import { Button } from "@/components/ui/button";
+import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const RegisterPage = () => {
+  const [isPending, setIsPending] = useState(false);
+
+  const handleLoginWithGoogle = async () => {
+    await signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+      errorCallbackURL: "/auth/login/error",
+      fetchOptions: {
+        onRequest: () => {
+          setIsPending(true);
+        },
+        onResponse: () => {
+          setIsPending(false);
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
+      },
+    });
+  };
+
   return (
     <div className="lg:p-8">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -41,9 +66,9 @@ const RegisterPage = () => {
           <Button
             variant="outline"
             type="button"
-            // onClick={handleLoginWithGoogle}
+            onClick={handleLoginWithGoogle}
           >
-            {/* <Icons.google className="mr-2 h-4 w-4" /> */}
+            <Icons.google className="h-4 w-4" />
             Google
           </Button>
         </div>

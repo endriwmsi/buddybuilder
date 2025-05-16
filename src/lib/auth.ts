@@ -13,6 +13,12 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
   },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path === "/sign-up/email") {
@@ -43,6 +49,11 @@ export const auth = betterAuth({
   },
   session: {
     expiresIn: 60 * 60 * 24 * 5, // 5 days
+  },
+  account: {
+    accountLinking: {
+      enabled: false,
+    },
   },
   advanced: {
     database: {
