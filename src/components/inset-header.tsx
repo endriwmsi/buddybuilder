@@ -17,6 +17,7 @@ import { SidebarUserType } from "@/lib/types";
 import { signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ModeToggle } from "./mode-toggle";
 
 interface InsetHeaderProps {
   user: SidebarUserType;
@@ -46,6 +47,7 @@ export default function InsetHeader({ user }: InsetHeaderProps) {
         <SidebarTrigger className="-ml-1" />
       </div>
       <div className="flex items-center gap-2 px-4">
+        <ModeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton

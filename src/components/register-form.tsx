@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PasswordInput } from "./ui/password-input";
 
 export const registerSchema = z.object({
   email: z.string().email().min(2, {
@@ -67,9 +68,7 @@ const RegisterForm = () => {
               name="email"
               render={({ field }) => (
                 <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="email">
-                    Email
-                  </Label>
+                  <Label htmlFor="email">Email</Label>
                   <FormControl>
                     <Input
                       {...field}
@@ -89,9 +88,7 @@ const RegisterForm = () => {
               name="name"
               render={({ field }) => (
                 <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="email">
-                    Nome
-                  </Label>
+                  <Label htmlFor="email">Nome</Label>
                   <FormControl>
                     <Input
                       {...field}
@@ -111,15 +108,12 @@ const RegisterForm = () => {
               name="password"
               render={({ field }) => (
                 <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="email">
-                    Senha
-                  </Label>
+                  <Label htmlFor="email">Senha</Label>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       {...field}
                       id="password"
                       placeholder="********"
-                      type="password"
                       disabled={isPending}
                     />
                   </FormControl>

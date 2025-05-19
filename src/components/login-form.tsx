@@ -16,6 +16,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PasswordInput } from "./ui/password-input";
+import Link from "next/link";
 
 export const loginSchema = z.object({
   email: z.string().email("Você deve inserir um e-mail válido."),
@@ -59,9 +61,7 @@ const LoginForm = () => {
               name="email"
               render={({ field }) => (
                 <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="email">
-                    Email
-                  </Label>
+                  <Label htmlFor="email">Email</Label>
                   <FormControl>
                     <Input
                       {...field}
@@ -81,15 +81,21 @@ const LoginForm = () => {
               name="password"
               render={({ field }) => (
                 <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="email">
-                    Senha
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="" htmlFor="email">
+                      Senha
+                    </Label>
+                    <span className="text-muted-foreground text-sm underline">
+                      <Link tabIndex={-1} href="/auth/forgot-password">
+                        Esqueci minha senha
+                      </Link>
+                    </span>
+                  </div>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       {...field}
                       id="password"
                       placeholder="********"
-                      type="password"
                       disabled={isPending}
                     />
                   </FormControl>

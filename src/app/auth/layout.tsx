@@ -1,3 +1,5 @@
+import { Icons } from "@/components/icons";
+import authBg from "@/../public/images/auth-bg.jpg";
 export default function AuthLayout({
   children,
 }: {
@@ -13,14 +15,14 @@ export default function AuthLayout({
         <div
           className="absolute inset-0 bg-zinc-900"
           style={{
-            // backgroundImage: `url(${bgImage.src})`,
+            backgroundImage: `url(${authBg.src})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         />
 
         <div className="relative z-20 flex items-center justify-end text-lg font-medium">
-          {/* <AppLogo /> */} Logo
+          <Icons.logo className="h-10 w-10" />
         </div>
 
         <div className="relative z-20 mt-auto">
@@ -30,7 +32,7 @@ export default function AuthLayout({
               de estratégias de marketing do meu negócio, basicamente me deixou
               respirar ar fresco.&rdquo;
             </p>
-            <footer className="text-sm">Valéria Cunha</footer>
+            <footer className="text-sm">Endriw Schiavenato</footer>
           </blockquote>
         </div>
       </div>

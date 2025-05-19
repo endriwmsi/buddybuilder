@@ -14,11 +14,22 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     requireEmailVerification: true,
+
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmailAction({
+        to: user.email,
+        subject: "Redefinir senha",
+        meta: {
+          description: "Clique no link abaixo para redefinir sua senha.",
+          link: String(url),
+        },
+      });
+    },
   },
   emailVerification: {
     sendOnSignUp: true,
-    expiresIn: 60 * 60,
     autoSignInAfterVerification: false,
+
     sendVerificationEmail: async ({ user, url }) => {
       const link = new URL(url);
       link.searchParams.set("errorCallbackURL", "/auth/verify");

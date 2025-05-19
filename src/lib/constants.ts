@@ -10,18 +10,18 @@ import {
 
 export const navMain = [
   {
-    title: "Playground",
+    title: "Home",
     url: "#",
     icon: SquareTerminal,
     isActive: true,
     items: [
       {
-        title: "History",
-        url: "#",
+        title: "Dashboard",
+        url: "/dashboard",
       },
       {
-        title: "Starred",
-        url: "#",
+        title: "Kanban",
+        url: "/kanban",
       },
       {
         title: "Settings",
