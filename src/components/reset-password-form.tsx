@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PasswordInput } from "./ui/password-input";
+import { Icons } from "./icons";
 
 interface ResetPasswordFormProps {
   token: string;
@@ -63,7 +64,14 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
       </div>
 
       <Button className="w-full" type="submit" disabled={isPending}>
-        Redefinir senha
+        {isPending ? (
+          <span className="flex items-center gap-2">
+            <Icons.spinner className="h-4 w-4 animate-spin" />
+            Redefinindo senha
+          </span>
+        ) : (
+          "Redefinir senha"
+        )}
       </Button>
     </form>
   );

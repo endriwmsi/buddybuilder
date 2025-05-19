@@ -7,6 +7,7 @@ import { forgetPassword } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Icons } from "./icons";
 
 export const ForgotPasswordForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -56,7 +57,14 @@ export const ForgotPasswordForm = () => {
       </div>
 
       <Button className="w-full" type="submit" disabled={isPending}>
-        Enviar link de redefinição
+        {isPending ? (
+          <span className="flex items-center gap-2">
+            <Icons.spinner className="h-4 w-4 animate-spin" />
+            Enviando link de redefinição
+          </span>
+        ) : (
+          "Enviar link de redefinição"
+        )}
       </Button>
     </form>
   );

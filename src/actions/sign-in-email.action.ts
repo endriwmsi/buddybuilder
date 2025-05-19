@@ -17,7 +17,7 @@ export async function signInEmailAction(data: loginSchema) {
   if (!password) return { error: "Insira uma senha válida" };
 
   try {
-    const res = await auth.api.signInEmail({
+    const response = await auth.api.signInEmail({
       headers: await headers(),
       body: {
         email: data.email,
@@ -26,10 +26,15 @@ export async function signInEmailAction(data: loginSchema) {
       asResponse: true,
     });
 
+    if (!response.ok) {
+      return { error: "E-mail ou senha inválidos." };
+    }
+
     return { error: null };
   } catch (error) {
     if (error instanceof APIError) {
       const errorCode = error.body ? (error.body.code as ErrorCode) : "UNKNOWN";
+      console.log(errorCode);
 
       switch (errorCode) {
         case "EMAIL_NOT_VERIFIED":
@@ -41,6 +46,4 @@ export async function signInEmailAction(data: loginSchema) {
 
     return { error: "Erro de servidor Interno." };
   }
-
-  return { error: null };
 }

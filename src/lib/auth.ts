@@ -32,13 +32,14 @@ export const auth = betterAuth({
 
     sendVerificationEmail: async ({ user, url }) => {
       const link = new URL(url);
-      link.searchParams.set("errorCallbackURL", "/auth/verify");
+      link.searchParams.set("callbackURL", "/auth/verify");
 
       await sendEmailAction({
         to: user.email,
-        subject: "Verificação de e-mail",
+        subject: "Verifique seu e-mail",
         meta: {
-          description: "Clique no link abaixo para verificar seu e-mail.",
+          description:
+            "Por favor, clique no link abaixo para verificar seu e-mail.",
           link: String(link),
         },
       });
@@ -60,7 +61,7 @@ export const auth = betterAuth({
 
         if (!VALID_DOMAINS.includes(domain)) {
           throw new APIError("BAD_REQUEST", {
-            message: "Invalid domain. Please use a valid email address.",
+            message: "Domínio inválido. Por favor, use um domínio válido.",
           });
         }
 
@@ -79,7 +80,7 @@ export const auth = betterAuth({
     }),
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 5, // 5 days
+    expiresIn: 60 * 60 * 24, // 1 days
   },
   account: {
     accountLinking: {

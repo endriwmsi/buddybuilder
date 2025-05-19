@@ -7,6 +7,7 @@ import { Label } from "./ui/label";
 import { useRouter } from "next/navigation";
 import { sendVerificationEmail } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { Icons } from "./icons";
 
 const SendVerificationEmailForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -50,7 +51,16 @@ const SendVerificationEmailForm = () => {
         <Input type="email" name="email" id="email" />
       </div>
 
-      <Button type="submit">Enviar e-mail de verificação</Button>
+      <Button type="submit" disabled={isPending}>
+        {isPending ? (
+          <span className="flex items-center gap-2">
+            <Icons.spinner className="h-4 w-4 animate-spin" />
+            Enviando e-mail de verificação
+          </span>
+        ) : (
+          "Enviar e-mail de verificação"
+        )}
+      </Button>
     </form>
   );
 };

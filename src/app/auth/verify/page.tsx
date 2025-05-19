@@ -29,4 +29,4 @@ const VerifyPage = async ({ searchParams }: VerifyPageProps) => {
   );
 };
 
-export default VerifyPageProps;
+export default VerifyPage;

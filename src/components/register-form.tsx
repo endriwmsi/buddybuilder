@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { PasswordInput } from "./ui/password-input";
+import { Icons } from "./icons";
 
 export const registerSchema = z.object({
   email: z.string().email().min(2, {
@@ -50,6 +51,7 @@ const RegisterForm = () => {
 
     if (error) {
       toast.error(error);
+      setIsPending(false);
     } else {
       toast.success(
         "Usuário cadastrado com sucesso. Por favor, verifique seu e-mail para continuar."
@@ -123,8 +125,14 @@ const RegisterForm = () => {
             />
 
             <Button type="submit" disabled={isPending}>
-              {isPending && <span>loading...</span>}
-              Entrar com e-mail
+              {isPending ? (
+                <span className="flex items-center gap-2">
+                  <Icons.spinner className="h-4 w-4 animate-spin" />
+                  Entrando
+                </span>
+              ) : (
+                "Entrar com e-mail"
+              )}
             </Button>
           </div>
         </form>

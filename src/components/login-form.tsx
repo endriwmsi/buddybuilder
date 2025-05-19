@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { PasswordInput } from "./ui/password-input";
 import Link from "next/link";
+import { Icons } from "./icons";
 
 export const loginSchema = z.object({
   email: z.string().email("Você deve inserir um e-mail válido."),
@@ -41,13 +42,20 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsPending(true);
 
-    const { error } = await signInEmailAction(values);
+    try {
+      const { error } = await signInEmailAction(values);
 
-    if (error) {
-      toast.error(error);
-    } else {
+      if (error) {
+        toast.error(error);
+        setIsPending(false);
+        return;
+      }
+
       toast.success("Sessão iniciada com sucesso. Seja bem-vindo de volta!");
       router.push("/dashboard");
+    } catch (error) {
+      toast.error("Ocorreu um erro ao tentar fazer login.");
+      setIsPending(false);
     }
   };
 
@@ -105,8 +113,14 @@ const LoginForm = () => {
             />
 
             <Button type="submit" disabled={isPending}>
-              {isPending && <span>loading</span>}
-              Entrar com e-mail
+              {isPending ? (
+                <span className="flex items-center gap-2">
+                  <Icons.spinner className="h-4 w-4 animate-spin" />
+                  Entrando
+                </span>
+              ) : (
+                "Entrar com e-mail"
+              )}
             </Button>
           </div>
         </form>
