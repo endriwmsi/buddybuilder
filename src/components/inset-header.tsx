@@ -13,20 +13,17 @@ import {
 } from "./ui/dropdown-menu";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react";
-import { SidebarUserType } from "@/lib/types";
 import { signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ModeToggle } from "./mode-toggle";
+import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
+import { useAuth } from "@/lib/auth-context";
 
-interface InsetHeaderProps {
-  user: SidebarUserType;
-}
-
-export default function InsetHeader({ user }: InsetHeaderProps) {
+export default function InsetHeader() {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const { user } = useAuth();
 
   const handleSignOut = async () => {
     await signOut({
@@ -48,7 +45,7 @@ export default function InsetHeader({ user }: InsetHeaderProps) {
         <SidebarTrigger className="-ml-1" />
       </div>
       <div className="flex items-center gap-2 px-4">
-        <ModeToggle />
+        <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">

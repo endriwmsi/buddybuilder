@@ -38,9 +38,10 @@ model User {
   image         String?
   role          UserRole @default(USER)
 
-  sessions Session[]
-  accounts Account[]
-  Post     Post[]
+  sessions     Session[]
+  accounts     Account[]
+  Post         Post[]
+  KanbanColumn KanbanColumn[]
 
   @@map("users")
 }
@@ -92,4 +93,44 @@ model Verification {
   expiresAt  DateTime
 
   @@map("verifications")
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model KanbanColumn {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name  String
+  order Int
+  color String @default("#e2e8f0") // Default color (slate-200)
+
+  userId String
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks  KanbanTask[]
+
+  @@map("kanban_columns")
+}
+
+model KanbanTask {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+  order       Int
+  dueDate     DateTime?
+  priority    TaskPriority @default(MEDIUM)
+
+  columnId String
+  column   KanbanColumn @relation(fields: [columnId], references: [id], onDelete: Cascade)
+
+  @@map("kanban_tasks")
 }

@@ -2,9 +2,9 @@ import { AppSidebar } from "@/components/app-sidebar";
 import InsetHeader from "@/components/inset-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth";
-import { SidebarUserType } from "@/lib/types";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { AuthProvider } from "@/lib/auth-context";
 
 export default async function Layout({
   children,
@@ -17,7 +17,7 @@ export default async function Layout({
 
   if (!session) redirect("/auth/login");
 
-  const sidebarUser: SidebarUserType = {
+  const user = {
     id: session.user.id,
     name: session.user.name,
     email: session.user.email,
@@ -25,12 +25,14 @@ export default async function Layout({
   };
 
   return (
-    <SidebarProvider>
-      <AppSidebar user={sidebarUser} />
-      <SidebarInset>
-        <InsetHeader user={sidebarUser} />
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
+    <AuthProvider user={user}>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <InsetHeader />
+          {children}
+        </SidebarInset>
+      </SidebarProvider>
+    </AuthProvider>
   );
 }

@@ -20,8 +20,8 @@ export const navMain = [
         url: "/dashboard",
       },
       {
-        title: "Kanban",
-        url: "/kanban",
+        title: "Tarefas",
+        url: "/tasks",
       },
       {
         title: "Settings",

@@ -11,15 +11,13 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { navMain, teams } from "@/lib/constants";
-import { User } from "@/generated/prisma";
+import { useAuth } from "@/lib/auth-context";
 
-interface AppSidebarProps {
-  user: Pick<User, "id" | "name" | "email" | "image">;
-}
+export function AppSidebar() {
+  const { user } = useAuth();
 
-export function AppSidebar({ user, ...props }: AppSidebarProps) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <TeamSwitcher teams={teams} />
       </SidebarHeader>
