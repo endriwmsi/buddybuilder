@@ -39,7 +39,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { createTask } from "@/actions/kanban-actions";
+import { createTask } from "@/actions/kanban.action";
 import { PRIORITY_CONFIG } from "@/lib/types";
 import { ptBR } from "date-fns/locale";
 

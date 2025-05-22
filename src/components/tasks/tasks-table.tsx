@@ -43,7 +43,7 @@ import { Badge } from "@/components/ui/badge";
 import TaskDetailsDialog from "./dialogs/task-details-dialog";
 import DeleteConfirmDialog from "./dialogs/delete-confirm-dialog";
 import { PRIORITY_CONFIG, TaskPriority } from "@/lib/types";
-import { deleteMultipleTasks } from "@/actions/kanban-actions";
+import { deleteMultipleTasks } from "@/actions/kanban.action";
 import type { Column, Task } from "@/lib/types";
 import { Checkbox } from "../ui/checkbox";
 

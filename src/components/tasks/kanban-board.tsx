@@ -13,7 +13,7 @@ import {
   getTasks,
   reorderColumn,
   moveTask,
-} from "@/actions/kanban-actions";
+} from "@/actions/kanban.action";
 import type { Column, Task } from "@/lib/types";
 import TasksTable from "./tasks-table";
 import { useAuth } from "@/lib/auth-context";

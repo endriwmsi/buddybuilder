@@ -41,7 +41,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import DeleteConfirmDialog from "./delete-confirm-dialog";
-import { updateTask, deleteTask } from "@/actions/kanban-actions";
+import { updateTask, deleteTask } from "@/actions/kanban.action";
 import { PRIORITY_CONFIG } from "@/lib/types";
 import type { Task } from "@/lib/types";
 import { TaskPriority } from "@/generated/prisma";

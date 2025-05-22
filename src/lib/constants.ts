@@ -24,6 +24,10 @@ export const navMain = [
         url: "/tasks",
       },
       {
+        title: "Chat",
+        url: "/chat",
+      },
+      {
         title: "Settings",
         url: "#",
       },
