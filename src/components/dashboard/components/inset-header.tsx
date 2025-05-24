@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/components/dashboard/components/auth-context";
 
 export default function InsetHeader() {
   const { isMobile } = useSidebar();

@@ -1,8 +1,8 @@
 "use client";
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
+import { NavMain } from "@/components/dashboard/components/nav-main";
+import { NavUser } from "@/components/dashboard/components/nav-user";
+import { TeamSwitcher } from "@/components/dashboard/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +11,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { navMain, teams } from "@/lib/constants";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth } from "@/components/dashboard/components/auth-context";
 
 export function AppSidebar() {
   const { user } = useAuth();

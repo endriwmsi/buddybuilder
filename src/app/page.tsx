@@ -1,26 +1,26 @@
-import Cta from "@/components/landing-page/layout/cta";
-import Hero from "@/components/landing-page/layout/hero";
-import Faq from "@/components/landing-page/layout/faq";
-import Testimonials from "@/components/landing-page/layout/testimonials";
-import Pricing from "@/components/landing-page/layout/pricing";
-import Product from "@/components/landing-page/layout/product";
-import { MouseSpotlight } from "@/components/landing-page/layout/mouse-spotlight";
-import Features from "@/components/landing-page/layout/features";
-import Header from "@/components/landing-page/layout/header";
-import Footer from "@/components/landing-page/layout/footer";
+import Header from "@/components/landing-page/header";
+import Hero from "@/components/landing-page/hero";
+import Features from "@/components/landing-page/features";
+import ProductShowcase from "@/components/landing-page/product-showcase";
+import Testimonials from "@/components/landing-page/testimonials";
+import Pricing from "@/components/landing-page/pricing";
+import FAQ from "@/components/landing-page/faq";
+import FinalCTA from "@/components/landing-page/final-cta";
+import Footer from "@/components/landing-page/footer";
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="relative min-h-screen">
-      <MouseSpotlight />
+    <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
       <Header />
-      <Hero />
-      <Features />
-      <Product />
-      <Testimonials />
-      <Pricing />
-      <Faq />
-      <Cta />
+      <main>
+        <Hero />
+        <Features />
+        <ProductShowcase />
+        <Testimonials />
+        <Pricing />
+        <FAQ />
+        <FinalCTA />
+      </main>
       <Footer />
     </div>
   );

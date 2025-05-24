@@ -1,10 +1,10 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import InsetHeader from "@/components/inset-header";
+import { AppSidebar } from "@/components/dashboard/components/app-sidebar";
+import InsetHeader from "@/components/dashboard/components/inset-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { AuthProvider } from "@/lib/auth-context";
+import { AuthProvider } from "@/components/dashboard/components/auth-context";
 
 export default async function Layout({
   children,
