@@ -1,4 +1,4 @@
-import KanbanBoard from "@/components/tasks/kanban-board";
+import KanbanBoard from "@/app/(private)/(admin)/tasks/components/kanban-board";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";

@@ -13,11 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import KanbanTask from "./kanban-task";
+import { deleteColumn } from "@/actions/kanban.action";
+import type { Column, Task } from "@/lib/types";
 import CreateTaskDialog from "./dialogs/create-task-dialog";
 import EditColumnDialog from "./dialogs/edit-column-dialog";
 import DeleteConfirmDialog from "./dialogs/delete-confirm-dialog";
-import { deleteColumn } from "@/actions/kanban.action";
-import type { Column, Task } from "@/lib/types";
 
 interface KanbanColumnProps {
   column: Column;

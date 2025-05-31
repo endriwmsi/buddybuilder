@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import KanbanColumn from "./kanban-column";
-import CreateColumnDialog from "./dialogs/create-column-dialog";
 import {
   getColumns,
   getTasks,
@@ -17,6 +16,7 @@ import {
 import type { Column, Task } from "@/lib/types";
 import TasksTable from "./tasks-table";
 import { useAuth } from "@/components/dashboard/components/auth-context";
+import CreateColumnDialog from "./dialogs/create-column-dialog";
 
 export default function KanbanBoard() {
   const { user } = useAuth();

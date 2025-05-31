@@ -1,7 +1,7 @@
 "use client";
 
 import { getUserInitials } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,14 +10,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { SidebarTrigger, useSidebar } from "./ui/sidebar";
+} from "@/components/ui/dropdown-menu";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ThemeToggle } from "./theme-toggle";
-import { Button } from "./ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/dashboard/components/auth-context";
 
 export default function InsetHeader() {

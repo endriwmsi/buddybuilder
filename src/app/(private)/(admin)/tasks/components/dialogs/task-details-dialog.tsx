@@ -59,8 +59,8 @@ const formSchema = z.object({
 
 interface TaskDetailsDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
   task: Task;
+  onOpenChange: (open: boolean) => void;
   refreshData: () => Promise<void>;
 }
 

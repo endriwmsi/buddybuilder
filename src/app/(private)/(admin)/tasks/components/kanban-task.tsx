@@ -16,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import TaskDetailsDialog from "./dialogs/task-details-dialog";
 import { PRIORITY_CONFIG, TaskPriority } from "@/lib/types";
 import type { Task } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -25,7 +24,8 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../ui/tooltip";
+} from "../../../../../components/ui/tooltip";
+import TaskDetailsDialog from "./dialogs/task-details-dialog";
 
 interface KanbanTaskProps {
   task: Task;
