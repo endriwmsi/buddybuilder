@@ -88,7 +88,7 @@ export default function Header() {
                 variant="ghost"
                 className="rounded-xl text-gray-600 hover:bg-gray-100/50 dark:text-gray-300 dark:hover:bg-gray-800/50"
               >
-                Sign In
+                <Link href="/auth/login">Sign In</Link>
               </Button>
             </motion.div>
             <motion.div

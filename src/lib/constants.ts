@@ -28,6 +28,10 @@ export const navMain = [
         url: "/chat",
       },
       {
+        title: "CRM",
+        url: "/funnels",
+      },
+      {
         title: "Settings",
         url: "#",
       },

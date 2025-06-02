@@ -1,7 +1,7 @@
 "use client";
 
+import RegisterForm from "@/components/auth/register-form";
 import { Icons } from "@/components/icons";
-import RegisterForm from "@/components/register-form";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
@@ -67,9 +67,16 @@ const RegisterPage = () => {
             variant="outline"
             type="button"
             onClick={handleLoginWithGoogle}
+            disabled={isPending}
           >
-            <Icons.google className="h-4 w-4" />
-            Google
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <Icons.spinner className="h-4 w-4 animate-spin" />
+                Google
+              </span>
+            ) : (
+              "Google"
+            )}
           </Button>
         </div>
 

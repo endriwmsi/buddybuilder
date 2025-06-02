@@ -1,3 +1,6 @@
+import { LeadSource, LeadStatus } from "@/generated/prisma";
+import { Decimal } from "@prisma/client/runtime/library";
+
 export type SidebarUserType = {
   id: string;
   name: string;
@@ -7,7 +10,7 @@ export type SidebarUserType = {
 
 export type TaskPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 
-export interface Column {
+export type Column = {
   id: string;
   name: string;
   order: number;
@@ -15,9 +18,9 @@ export interface Column {
   createdAt: Date;
   updatedAt: Date;
   userId: string;
-}
+};
 
-export interface Task {
+export type Task = {
   id: string;
   title: string;
   description: string | null;
@@ -27,7 +30,28 @@ export interface Task {
   columnId: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
+
+export type Lead = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  position: string;
+
+  value: Decimal;
+  source: LeadSource;
+  status: LeadStatus;
+
+  description: String;
+  tags: String;
+  lastContact: Date;
+  expectedClose: Date;
+};
 
 export const PRIORITY_CONFIG = {
   LOW: {

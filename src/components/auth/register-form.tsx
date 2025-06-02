@@ -16,8 +16,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { PasswordInput } from "./ui/password-input";
-import { Icons } from "./icons";
+import { PasswordInput } from "../ui/password-input";
+import { Icons } from "../icons";
 
 export const registerSchema = z.object({
   email: z.string().email().min(2, {

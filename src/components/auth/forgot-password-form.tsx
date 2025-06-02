@@ -7,7 +7,7 @@ import { forgetPassword } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Icons } from "./icons";
+import { Icons } from "../icons";
 
 export const ForgotPasswordForm = () => {
   const [isPending, setIsPending] = useState(false);

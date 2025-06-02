@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import LoginForm from "@/components/login-form";
 import { signIn } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Icons } from "@/components/icons";
+import LoginForm from "@/components/auth/login-form";
 
 const LoginPage = () => {
   const [isPending, setIsPending] = useState(false);
@@ -66,8 +66,14 @@ const LoginPage = () => {
             type="button"
             onClick={handleLoginWithGoogle}
           >
-            <Icons.google className="h-4 w-4" />
-            Google
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <Icons.spinner className="h-4 w-4 animate-spin" />
+                Google
+              </span>
+            ) : (
+              "Google"
+            )}
           </Button>
         </div>
       </div>
