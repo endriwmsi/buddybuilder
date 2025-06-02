@@ -6,21 +6,21 @@ import { Plus, List, Kanban } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import KanbanColumn from "./kanban-column";
 import {
   getColumns,
   getTasks,
   reorderColumn,
   moveTask,
-} from "@/actions/kanban.action";
-import type { Column, Task } from "@/lib/types";
+} from "@/app/(private)/(admin)/tasks/actions/tasks.action";
 import TasksTable from "./tasks-table";
 import { useAuth } from "@/components/dashboard/components/auth-context";
 import CreateColumnDialog from "./dialogs/create-column-dialog";
+import { Task, TaskColumn } from "@/generated/prisma";
+import TasksColumn from "./tasks-column";
 
-export default function KanbanBoard() {
+export default function TasksBoard() {
   const { user } = useAuth();
-  const [columns, setColumns] = useState<Column[]>([]);
+  const [taskColumns, setTaskColumns] = useState<TaskColumn[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateColumnOpen, setIsCreateColumnOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function KanbanBoard() {
         const columnsData = await getColumns(user.id);
         const tasksData = await getTasks(user.id);
 
-        setColumns(columnsData);
+        setTaskColumns(columnsData);
         setTasks(tasksData);
       } catch (error) {
         console.error("Failed to load kanban data:", error);
@@ -72,7 +72,7 @@ export default function KanbanBoard() {
     }
 
     if (type === "column") {
-      const newColumns = [...columns];
+      const newColumns = [...taskColumns];
       const movedColumn = newColumns.find((col) => col.id === draggableId);
 
       if (!movedColumn) return;
@@ -85,20 +85,22 @@ export default function KanbanBoard() {
         order: index,
       }));
 
-      setColumns(updatedColumns);
+      setTaskColumns(updatedColumns);
 
       try {
         await reorderColumn(draggableId, destination.index);
       } catch (error) {
         toast.error("Falha ao reordenar colunas. Por favor, tente novamente.");
-        setColumns(columns);
+        setTaskColumns(taskColumns);
       }
 
       return;
     }
 
-    const sourceColumn = columns.find((col) => col.id === source.droppableId);
-    const destinationColumn = columns.find(
+    const sourceColumn = taskColumns.find(
+      (col) => col.id === source.droppableId
+    );
+    const destinationColumn = taskColumns.find(
       (col) => col.id === destination.droppableId
     );
 
@@ -106,7 +108,7 @@ export default function KanbanBoard() {
 
     if (source.droppableId === destination.droppableId) {
       const columnTasks = tasks.filter(
-        (task) => task.columnId === sourceColumn.id
+        (task) => task.taskColumnId === sourceColumn.id
       );
       const movedTask = columnTasks.find((task) => task.id === draggableId);
 
@@ -137,7 +139,7 @@ export default function KanbanBoard() {
       if (taskIndex !== -1) {
         newTasks[taskIndex] = {
           ...newTasks[taskIndex],
-          columnId: destination.droppableId,
+          taskColumnId: destination.droppableId,
           order: destination.index,
         };
       }
@@ -159,7 +161,7 @@ export default function KanbanBoard() {
       const columnsData = await getColumns(user.id);
       const tasksData = await getTasks(user.id);
 
-      setColumns(columnsData);
+      setTaskColumns(columnsData);
       setTasks(tasksData);
     } catch (error) {
       console.error("Failed to refresh kanban data:", error);
@@ -215,14 +217,14 @@ export default function KanbanBoard() {
                   ref={provided.innerRef}
                   className="flex gap-4 overflow-x-auto pb-4"
                 >
-                  {columns
+                  {taskColumns
                     .sort((a, b) => a.order - b.order)
-                    .map((column, index) => (
-                      <KanbanColumn
-                        key={column.id}
-                        column={column}
+                    .map((taskColum, index) => (
+                      <TasksColumn
+                        key={taskColum.id}
+                        taskColumn={taskColum}
                         tasks={tasks
-                          .filter((task) => task.columnId === column.id)
+                          .filter((task) => task.taskColumnId === taskColum.id)
                           .sort((a, b) => a.order - b.order)}
                         index={index}
                         refreshData={refreshData}
@@ -235,7 +237,11 @@ export default function KanbanBoard() {
           </DragDropContext>
         </div>
       ) : (
-        <TasksTable tasks={tasks} columns={columns} refreshData={refreshData} />
+        <TasksTable
+          tasks={tasks}
+          taskColumns={taskColumns}
+          refreshData={refreshData}
+        />
       )}
 
       <CreateColumnDialog

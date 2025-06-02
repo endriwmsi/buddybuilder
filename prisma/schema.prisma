@@ -13,18 +13,31 @@ enum UserRole {
   ADMIN
 }
 
-model Post {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
 
-  title   String
-  content String?
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("posts")
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  COLD_CALL
+  EMAIL_CAMPAIGN
+  SOCIAL_MEDIA
+  EVENT
+  OTHER
 }
 
 model User {
@@ -38,10 +51,13 @@ model User {
   image         String?
   role          UserRole @default(USER)
 
-  sessions     Session[]
-  accounts     Account[]
-  Post         Post[]
-  KanbanColumn KanbanColumn[]
+  sessions Session[]
+  accounts Account[]
+
+  Task       Task[]
+  TaskColumn TaskColumn[]
+
+  Funnel Funnel[]
 
   @@map("users")
 }
@@ -95,30 +111,24 @@ model Verification {
   @@map("verifications")
 }
 
-enum TaskPriority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
-model KanbanColumn {
+model TaskColumn {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   name  String
   order Int
-  color String @default("#e2e8f0") // Default color (slate-200)
+  color String @default("#e2e8f0")
 
   userId String
-  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tasks  KanbanTask[]
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("kanban_columns")
+  task Task[]
+
+  @@map("task_columns")
 }
 
-model KanbanTask {
+model Task {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -129,8 +139,79 @@ model KanbanTask {
   dueDate     DateTime?
   priority    TaskPriority @default(MEDIUM)
 
-  columnId String
-  column   KanbanColumn @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("kanban_tasks")
+  taskColumnId String
+  task_column  TaskColumn @relation(fields: [taskColumnId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+model FunnelColumn {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name  String
+  order Int
+  color String @default("#e2e8f0") // Default color (slate-200)
+
+  leads Lead[]
+
+  funnelId String
+  funnel   Funnel @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  @@map("funnel_columns")
+}
+
+model Funnel {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  isDefault   Boolean @default(false)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  columns FunnelColumn[]
+  Lead    Lead[]
+
+  @@map("funnels")
+}
+
+model Lead {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Informações básicas do lead
+  name     String
+  email    String?
+  phone    String?
+  company  String?
+  position String?
+
+  // Informações de negócio
+  value  Decimal?   @db.Decimal(10, 2)
+  source LeadSource @default(OTHER)
+  status LeadStatus @default(NEW)
+
+  // Informações adicionais
+  description   String?
+  tags          String?
+  lastContact   DateTime?
+  expectedClose DateTime?
+  order         Int       @default(0)
+
+  funnelId String
+  funnel   Funnel @relation(fields: [funnelId], references: [id], onDelete: Cascade)
+
+  funnelColumnId String
+  funnelColumn   FunnelColumn @relation(fields: [funnelColumnId], references: [id], onDelete: Cascade)
+
+  @@map("leads")
 }

@@ -41,21 +41,21 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { PRIORITY_CONFIG, TaskPriority } from "@/lib/types";
-import { deleteMultipleTasks } from "@/actions/kanban.action";
-import type { Column, Task } from "@/lib/types";
+import { deleteMultipleTasks } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
 import { Checkbox } from "@/components/ui/checkbox";
 import TaskDetailsDialog from "./dialogs/task-details-dialog";
 import DeleteConfirmDialog from "./dialogs/delete-confirm-dialog";
+import { Task, TaskColumn } from "@/generated/prisma";
 
 interface TasksTableProps {
   tasks: Task[];
-  columns: Column[];
+  taskColumns: TaskColumn[];
   refreshData: () => Promise<void>;
 }
 
 export default function TasksTable({
   tasks,
-  columns,
+  taskColumns,
   refreshData,
 }: TasksTableProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -81,13 +81,13 @@ export default function TasksTable({
     }
   };
 
-  const getColumnName = (columnId: string) => {
-    const column = columns.find((col) => col.id === columnId);
+  const getTaskColumnName = (taskColumnId: string) => {
+    const column = taskColumns.find((col) => col.id === taskColumnId);
     return column ? column.name : "Desconhecido";
   };
 
   const getColumnColor = (columnId: string) => {
-    const column = columns.find((col) => col.id === columnId);
+    const column = taskColumns.find((col) => col.id === columnId);
     return column ? column.color : "#e2e8f0";
   };
 
@@ -142,7 +142,7 @@ export default function TasksTable({
               className="h-3 w-3 rounded-full"
               style={{ backgroundColor: getColumnColor(columnId) }}
             ></div>
-            {getColumnName(columnId)}
+            {getTaskColumnName(columnId)}
           </div>
         );
       },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,8 +23,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createColumn } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
+import { updateColumn } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
 import ColorPicker from "../color-picker";
+import { FunnelColumn } from "@/generated/prisma";
 
 const formSchema = z.object({
   name: z
@@ -34,45 +35,54 @@ const formSchema = z.object({
   color: z.string(),
 });
 
-interface CreateColumnDialogProps {
+interface EditColumnDialogProps {
+  funnelColumn: FunnelColumn;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  userId: string;
   refreshData: () => Promise<void>;
 }
 
-export default function CreateColumnDialog({
+export default function EditFunnelColumnDialog({
+  funnelColumn,
   open,
   onOpenChange,
-  userId,
   refreshData,
-}: CreateColumnDialogProps) {
+}: EditColumnDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      color: "#e2e8f0",
+      name: funnelColumn.name,
+      color: funnelColumn.color,
     },
   });
+
+  // Reset form when column changes
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        name: funnelColumn.name,
+        color: funnelColumn.color,
+      });
+    }
+  }, [open, funnelColumn, form]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      await createColumn({
+      await updateColumn({
+        id: funnelColumn.id,
         name: values.name,
         color: values.color,
-        userId,
       });
 
       await refreshData();
-      form.reset();
       onOpenChange(false);
-      toast.success("Coluna criada com sucesso");
+      toast.success("Coluna atualizada com sucesso");
     } catch (error) {
-      console.error("Failed to create column:", error);
-      toast.error("Falha ao criar coluna. Por favor, tente novamente.");
+      console.error("Failed to update column:", error);
+      toast.error("Falha ao atualizar coluna. Por favor, tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -82,10 +92,8 @@ export default function CreateColumnDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Criar Nova Coluna</DialogTitle>
-          <DialogDescription>
-            Adicione uma nova coluna ao seu quadro kanban.
-          </DialogDescription>
+          <DialogTitle>Editar Coluna</DialogTitle>
+          <DialogDescription>Atualize os detalhes da coluna.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -127,7 +135,7 @@ export default function CreateColumnDialog({
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Criando..." : "Criar Coluna"}
+                {isSubmitting ? "Salvando..." : "Salvar Alterações"}
               </Button>
             </DialogFooter>
           </form>

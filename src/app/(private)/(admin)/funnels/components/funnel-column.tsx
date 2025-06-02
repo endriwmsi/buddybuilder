@@ -12,33 +12,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import KanbanTask from "./kanban-task";
-import { deleteColumn } from "@/actions/kanban.action";
-import type { Column, Task } from "@/lib/types";
-import CreateTaskDialog from "./dialogs/create-task-dialog";
-import EditColumnDialog from "./dialogs/edit-column-dialog";
-import DeleteConfirmDialog from "./dialogs/delete-confirm-dialog";
+import { deleteColumn } from "../actions/funnel-column.action";
+import DeleteConfirmDialog from "../../tasks/components/dialogs/delete-confirm-dialog";
+import { FunnelColumn, Lead } from "@/generated/prisma";
+import LeadItem from "./lead-item";
+import EditFunnelColumnDialog from "./dialogs/edit-funnel-column-dialog";
+import CreateLeadDialog from "./dialogs/create-lead-dialog";
 
-interface KanbanColumnProps {
-  column: Column;
-  tasks: Task[];
+interface FunnelColumnsProps {
+  funnelColumn: FunnelColumn;
+  leads: Lead[];
   index: number;
   refreshData: () => Promise<void>;
 }
 
-export default function KanbanColumn({
-  column,
-  tasks,
+export default function FunnelColumns({
+  funnelColumn,
+  leads,
   index,
   refreshData,
-}: KanbanColumnProps) {
-  const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
-  const [isEditColumnOpen, setIsEditColumnOpen] = useState(false);
-  const [isDeleteColumnOpen, setIsDeleteColumnOpen] = useState(false);
+}: FunnelColumnsProps) {
+  const [isCreateLeadOpen, setIsCreateLeadOpen] = useState(false);
+  const [isEditFunnelColumnOpen, setIsEditFunnelColumnOpen] = useState(false);
+  const [isDeleteFunnelColumnOpen, setIsDeleteFunnelColumnOpen] =
+    useState(false);
 
   const handleDeleteColumn = async () => {
     try {
-      await deleteColumn(column.id);
+      await deleteColumn(funnelColumn.id);
       await refreshData();
       toast.success("Coluna excluída com sucesso");
     } catch (error) {
@@ -48,7 +49,7 @@ export default function KanbanColumn({
   };
 
   return (
-    <Draggable draggableId={column.id} index={index}>
+    <Draggable draggableId={funnelColumn.id} index={index}>
       {(provided) => (
         <div
           ref={provided.innerRef}
@@ -57,15 +58,15 @@ export default function KanbanColumn({
         >
           <Card
             className="flex h-max flex-col overflow-hidden border-t-4"
-            style={{ borderTop: `4px solid ${column.color}` }}
+            style={{ borderTop: `4px solid ${funnelColumn.color}` }}
             {...provided.dragHandleProps}
           >
             <CardHeader className="border-b">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CardTitle>{column.name}</CardTitle>
+                  <CardTitle>{funnelColumn.name}</CardTitle>
                   <span className="text-muted-foreground bg-background/80 rounded-full px-2 py-1 text-xs">
-                    {tasks.length}
+                    {leads.length}
                   </span>
                 </div>
 
@@ -76,11 +77,13 @@ export default function KanbanColumn({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setIsEditColumnOpen(true)}>
+                    <DropdownMenuItem
+                      onClick={() => setIsEditFunnelColumnOpen(true)}
+                    >
                       Editar
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => setIsDeleteColumnOpen(true)}
+                      onClick={() => setIsDeleteFunnelColumnOpen(true)}
                       className="text-destructive"
                     >
                       Excluir
@@ -90,7 +93,7 @@ export default function KanbanColumn({
               </div>
             </CardHeader>
 
-            <Droppable droppableId={column.id} type="task">
+            <Droppable droppableId={funnelColumn.id} type="task">
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
@@ -98,12 +101,12 @@ export default function KanbanColumn({
                   className={`flex-1 overflow-y-auto p-2 ${snapshot.isDraggingOver ? "bg-muted/50" : ""}`}
                   style={{ minHeight: "200px" }}
                 >
-                  {tasks.map((task, index) => (
-                    <KanbanTask
-                      key={task.id}
-                      task={task}
+                  {leads.map((lead, index) => (
+                    <LeadItem
+                      key={lead.id}
+                      lead={lead}
                       index={index}
-                      columnName={column.name}
+                      columnName={funnelColumn.name}
                       refreshData={refreshData}
                     />
                   ))}
@@ -115,33 +118,34 @@ export default function KanbanColumn({
               <Button
                 variant="ghost"
                 className="text-muted-foreground w-full justify-start"
-                onClick={() => setIsCreateTaskOpen(true)}
+                onClick={() => setIsCreateLeadOpen(true)}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Adicionar Tarefa
+                Adicionar Lead
               </Button>
             </CardFooter>
           </Card>
 
-          <CreateTaskDialog
-            open={isCreateTaskOpen}
-            onOpenChange={setIsCreateTaskOpen}
-            columnId={column.id}
+          <CreateLeadDialog
+            open={isCreateLeadOpen}
+            onOpenChange={setIsCreateLeadOpen}
+            funnelId={funnelColumn.funnelId}
+            funnelColumnId={funnelColumn.id}
             refreshData={refreshData}
           />
 
-          <EditColumnDialog
-            open={isEditColumnOpen}
-            onOpenChange={setIsEditColumnOpen}
-            column={column}
+          <EditFunnelColumnDialog
+            open={isEditFunnelColumnOpen}
+            onOpenChange={setIsEditFunnelColumnOpen}
+            funnelColumn={funnelColumn}
             refreshData={refreshData}
           />
 
           <DeleteConfirmDialog
-            open={isDeleteColumnOpen}
-            onOpenChange={setIsDeleteColumnOpen}
+            open={isDeleteFunnelColumnOpen}
+            onOpenChange={setIsDeleteFunnelColumnOpen}
             title="Excluir Coluna"
-            description="Tem certeza que deseja excluir esta coluna? Todas as tarefas nesta coluna também serão excluídas. Esta ação não pode ser desfeita."
+            description="Tem certeza que deseja excluir esta coluna? Todos os Leads nesta coluna também serão excluídos. Esta ação não pode ser desfeita."
             onConfirm={handleDeleteColumn}
           />
         </div>

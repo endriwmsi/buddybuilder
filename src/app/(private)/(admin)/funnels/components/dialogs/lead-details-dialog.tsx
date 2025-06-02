@@ -41,37 +41,38 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import DeleteConfirmDialog from "./delete-confirm-dialog";
-import {
-  updateTask,
-  deleteTask,
-} from "@/app/(private)/(admin)/tasks/actions/tasks.action";
-import { PRIORITY_CONFIG } from "@/lib/types";
-import { Task, TaskPriority } from "@/generated/prisma";
 import { ptBR } from "date-fns/locale";
+import { Lead, LeadSource, LeadStatus } from "@/generated/prisma";
+import { deleteLead, updateLead } from "../../actions/lead.action";
 
 const formSchema = z.object({
-  title: z
-    .string()
-    .min(1, "Título é obrigatório")
-    .max(100, "Título deve ter menos de 100 caracteres"),
-  description: z.string().optional(),
-  dueDate: z.date().optional().nullable(),
-  priority: z.nativeEnum(TaskPriority),
+  name: z.string(),
+  email: z.string().nullable(),
+  phone: z.string().nullable(),
+  company: z.string().nullable(),
+  position: z.string().nullable(),
+  description: z.string().nullable(),
+  value: z.number().nullable(),
+  source: z.nativeEnum(LeadSource),
+  status: z.nativeEnum(LeadStatus),
+  tags: z.string().nullable(),
+  lastContact: z.date().nullable(),
+  expectedClose: z.date().nullable(),
 });
 
-interface TaskDetailsDialogProps {
+interface LeadDetailsDialogProps {
   open: boolean;
-  task: Task;
+  lead: Lead;
   onOpenChange: (open: boolean) => void;
   refreshData: () => Promise<void>;
 }
 
-export default function TaskDetailsDialog({
+export default function LeadDetailsDialog({
   open,
   onOpenChange,
-  task,
+  lead,
   refreshData,
-}: TaskDetailsDialogProps) {
+}: LeadDetailsDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -79,60 +80,83 @@ export default function TaskDetailsDialog({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: task.title,
-      description: task.description || "",
-      dueDate: task.dueDate ? new Date(task.dueDate) : null,
-      priority: task.priority,
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone,
+      company: lead.company,
+      position: lead.position,
+      description: lead.description,
+      value: lead.value ? Number(lead.value) : null,
+      source: lead.source,
+      status: lead.status,
+      tags: lead.tags,
+      lastContact: lead.lastContact,
+      expectedClose: lead.expectedClose,
     },
   });
 
-  // Reset form when task changes
+  // Reset form when lead changes
   useEffect(() => {
     if (open) {
       form.reset({
-        title: task.title,
-        description: task.description || "",
-        dueDate: task.dueDate ? new Date(task.dueDate) : null,
-        priority: task.priority,
+        name: lead.name,
+        email: lead.email,
+        phone: lead.phone,
+        company: lead.company,
+        position: lead.position,
+        description: lead.description,
+        value: lead.value ? Number(lead.value) : null,
+        source: lead.source,
+        status: lead.status,
+        tags: lead.tags,
+        lastContact: lead.lastContact,
+        expectedClose: lead.expectedClose,
       });
     }
-  }, [open, task, form]);
+  }, [open, lead, form]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      await updateTask({
-        id: task.id,
-        title: values.title,
-        description: values.description || "",
-        dueDate: values.dueDate ? values.dueDate.toISOString() : null,
-        priority: values.priority,
-      });
+      const formattedValues = {
+        id: lead.id,
+        name: values.name,
+        email: values.email || undefined,
+        phone: values.phone || undefined,
+        company: values.company || undefined,
+        position: values.position || undefined,
+        description: values.description || undefined,
+        value: values.value || undefined,
+        source: values.source,
+        status: values.status,
+        tags: values.tags || undefined,
+        lastContact: values.lastContact?.toISOString() || undefined,
+        expectedClose: values.expectedClose?.toISOString() || undefined,
+      };
+      await updateLead(formattedValues);
 
       await refreshData();
       setIsEditing(false);
-      toast.success("Tarefa atualizada com sucesso");
+      toast.success("Lead atualizado com sucesso");
     } catch (error) {
-      console.error("Failed to update task:", error);
-      toast.error("Falha ao atualizar tarefa. Por favor, tente novamente.");
+      console.error("Failed to update lead:", error);
+      toast.error("Falha ao atualizar lead. Por favor, tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDeleteTask = async () => {
+  const handleDeletelead = async () => {
     try {
-      await deleteTask(task.id);
+      await deleteLead(lead.id);
       await refreshData();
       onOpenChange(false);
-      toast.success("Tarefa excluída com sucesso");
+      toast.success("Lead excluída com sucesso");
     } catch (error) {
-      console.error("Failed to delete task:", error);
-      toast.error("Falha ao excluir tarefa. Por favor, tente novamente.");
+      console.error("Failed to delete lead:", error);
+      toast.error("Falha ao excluir lead. Por favor, tente novamente.");
     }
   };
-
-  const priorityConfig = PRIORITY_CONFIG[task.priority];
 
   return (
     <>
@@ -140,12 +164,12 @@ export default function TaskDetailsDialog({
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
-              {isEditing ? "Editar Tarefa" : "Detalhes da Tarefa"}
+              {isEditing ? "Editar Lead" : "Detalhes do Lead"}
             </DialogTitle>
             <DialogDescription>
               {isEditing
-                ? "Edite os detalhes da tarefa."
-                : "Visualize os detalhes da tarefa."}
+                ? "Edite os detalhes do Lead."
+                : "Visualize os detalhes do Lead."}
             </DialogDescription>
           </DialogHeader>
           {isEditing ? (
@@ -156,14 +180,79 @@ export default function TaskDetailsDialog({
               >
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Título</FormLabel>
+                      <FormLabel>Nome</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digite o nome do Lead" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Digite o título da tarefa"
+                          placeholder="Digite o email do Lead"
                           {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefone</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Digite o telefone do Lead"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="company"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Empresa</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Digite a empresa do Lead"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="position"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cargo</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Digite o cargo do Lead"
+                          {...field}
+                          value={field.value || ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -178,9 +267,10 @@ export default function TaskDetailsDialog({
                       <FormLabel>Descrição</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Digite a descrição da tarefa (opcional)"
+                          placeholder="Digite a descrição do Lead (opcional)"
                           className="min-h-[100px] resize-none"
                           {...field}
+                          value={field.value || ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -189,27 +279,48 @@ export default function TaskDetailsDialog({
                 />
                 <FormField
                   control={form.control}
-                  name="priority"
+                  name="value"
                   render={({ field }) => (
-                    <FormItem className="flex w-full flex-col">
-                      <FormLabel>Prioridade</FormLabel>
+                    <FormItem>
+                      <FormLabel>Valor</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Digite o valor do Lead"
+                          {...field}
+                          value={field.value || ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value ? Number(e.target.value) : null
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="source"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fonte</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Selecione a prioridade" />
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a fonte" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.entries(PRIORITY_CONFIG).map(
-                            ([key, config]) => (
-                              <SelectItem key={key} value={key}>
-                                {config.label}
-                              </SelectItem>
-                            )
-                          )}
+                          {Object.values(LeadSource).map((source) => (
+                            <SelectItem key={source} value={source}>
+                              {source}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -218,10 +329,37 @@ export default function TaskDetailsDialog({
                 />
                 <FormField
                   control={form.control}
-                  name="dueDate"
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.values(LeadStatus).map((status) => (
+                            <SelectItem key={status} value={status}>
+                              {status}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="expectedClose"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Data de Vencimento</FormLabel>
+                      <FormLabel>Data de Fechamento Esperada</FormLabel>
                       <div className="flex gap-2">
                         <Popover>
                           <PopoverTrigger asChild>
@@ -244,7 +382,7 @@ export default function TaskDetailsDialog({
                               locale={ptBR}
                               mode="single"
                               selected={field.value || undefined}
-                              onSelect={(date) => field.onChange(date)}
+                              onSelect={field.onChange}
                               initialFocus={false}
                             />
                           </PopoverContent>
@@ -284,34 +422,31 @@ export default function TaskDetailsDialog({
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-muted-foreground text-sm font-medium">
-                      Título
+                      Nome
                     </h3>
-                    <p className="mt-1">{task.title}</p>
+                    <p className="mt-1">{lead.name}</p>
                   </div>
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${priorityConfig.color}`}
-                  >
-                    {priorityConfig.label}
+                  <Badge variant="outline" className="text-xs">
+                    {lead.status}
                   </Badge>
                 </div>
-                {task.description && (
+                {lead.description && (
                   <div>
                     <h3 className="text-muted-foreground text-sm font-medium">
                       Descrição
                     </h3>
                     <p className="mt-1 whitespace-pre-line">
-                      {task.description}
+                      {lead.description}
                     </p>
                   </div>
                 )}
-                {task.dueDate && (
+                {lead.expectedClose && (
                   <div>
                     <h3 className="text-muted-foreground text-sm font-medium">
-                      Data de Vencimento
+                      Data de Fechamento Esperada
                     </h3>
                     <p className="mt-1">
-                      {new Date(task.dueDate).toLocaleDateString()}
+                      {new Date(lead.expectedClose).toLocaleDateString()}
                     </p>
                   </div>
                 )}
@@ -320,7 +455,7 @@ export default function TaskDetailsDialog({
                     Criado em
                   </h3>
                   <p className="mt-1">
-                    {new Date(task.createdAt).toLocaleDateString()}
+                    {new Date(lead.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -352,7 +487,7 @@ export default function TaskDetailsDialog({
         onOpenChange={setIsDeleteDialogOpen}
         title="Excluir Tarefa"
         description="Tem certeza que deseja excluir esta tarefa? Esta ação não pode ser desfeita."
-        onConfirm={handleDeleteTask}
+        onConfirm={handleDeletelead}
       />
     </>
   );

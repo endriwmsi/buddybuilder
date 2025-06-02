@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { updateColumn } from "@/actions/kanban.action";
+import { updateColumn } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
 import type { Column } from "@/lib/types";
 import ColorPicker from "../color-picker";
 

@@ -39,7 +39,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { createTask } from "@/actions/kanban.action";
+import { createTask } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
 import { PRIORITY_CONFIG } from "@/lib/types";
 import { ptBR } from "date-fns/locale";
 
@@ -68,7 +68,7 @@ export default function CreateTaskDialog({
 }: CreateTaskDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm({
+  const formData = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -86,11 +86,11 @@ export default function CreateTaskDialog({
         description: values.description || "",
         dueDate: values.dueDate ? values.dueDate.toISOString() : undefined,
         priority: values.priority,
-        columnId,
+        taskColumnId: columnId,
       });
 
       await refreshData();
-      form.reset();
+      formData.reset();
       onOpenChange(false);
       toast.success("Tarefa criada com sucesso");
     } catch (error) {
@@ -110,10 +110,13 @@ export default function CreateTaskDialog({
             Adicione uma nova tarefa a esta coluna.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Form {...formData}>
+          <form
+            onSubmit={formData.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
             <FormField
-              control={form.control}
+              control={formData.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
@@ -126,7 +129,7 @@ export default function CreateTaskDialog({
               )}
             />
             <FormField
-              control={form.control}
+              control={formData.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
@@ -143,7 +146,7 @@ export default function CreateTaskDialog({
               )}
             />
             <FormField
-              control={form.control}
+              control={formData.control}
               name="priority"
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col">
@@ -170,7 +173,7 @@ export default function CreateTaskDialog({
               )}
             />
             <FormField
-              control={form.control}
+              control={formData.control}
               name="dueDate"
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col">
@@ -218,6 +221,7 @@ export default function CreateTaskDialog({
                 </FormItem>
               )}
             />
+
             <DialogFooter>
               <Button
                 type="button"

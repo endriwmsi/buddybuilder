@@ -17,7 +17,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PRIORITY_CONFIG, TaskPriority } from "@/lib/types";
-import type { Task } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -26,20 +25,21 @@ import {
   TooltipTrigger,
 } from "../../../../../components/ui/tooltip";
 import TaskDetailsDialog from "./dialogs/task-details-dialog";
+import { Task } from "@/generated/prisma";
 
-interface KanbanTaskProps {
+interface TaskItemProps {
   task: Task;
   index: number;
   columnName: string;
   refreshData: () => Promise<void>;
 }
 
-export default function KanbanTask({
+export default function TaskItem({
   task,
   index,
   columnName,
   refreshData,
-}: KanbanTaskProps) {
+}: TaskItemProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const getPriorityIcon = (priority: TaskPriority) => {

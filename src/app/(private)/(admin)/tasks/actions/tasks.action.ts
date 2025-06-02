@@ -7,6 +7,11 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import db from "@/lib/prisma";
+import {
+  createColumnSchema,
+  createTaskSchema,
+  updateTaskSchema,
+} from "./schemas";
 
 // Column Actions
 export async function getColumns(userId: string) {
@@ -18,8 +23,7 @@ export async function getColumns(userId: string) {
     redirect("/auth/login");
   }
 
-  // Check if user has any columns
-  const existingColumns = await db.kanbanColumn.findMany({
+  const existingColumns = await db.taskColumn.findMany({
     where: { userId },
     orderBy: { order: "asc" },
   });
@@ -34,7 +38,7 @@ export async function getColumns(userId: string) {
 
     const createdColumns = await Promise.all(
       defaultColumns.map(async (column) => {
-        return db.kanbanColumn.create({
+        return db.taskColumn.create({
           data: {
             name: column.name,
             order: column.order,
@@ -64,16 +68,10 @@ export async function createColumn(data: {
     redirect("/auth/login");
   }
 
-  const createColumnSchema = z.object({
-    name: z.string().min(1).max(50),
-    color: z.string(),
-    userId: z.string(),
-  });
-
   const validatedData = createColumnSchema.parse(data);
 
   // Get the highest order value
-  const highestOrder = await db.kanbanColumn.findFirst({
+  const highestOrder = await db.taskColumn.findFirst({
     where: { userId: validatedData.userId },
     orderBy: { order: "desc" },
     select: { order: true },
@@ -81,7 +79,7 @@ export async function createColumn(data: {
 
   const newOrder = highestOrder ? highestOrder.order + 1 : 0;
 
-  const column = await db.kanbanColumn.create({
+  const column = await db.taskColumn.create({
     data: {
       name: validatedData.name,
       color: validatedData.color,
@@ -90,7 +88,7 @@ export async function createColumn(data: {
     },
   });
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return column;
 }
 
@@ -116,7 +114,7 @@ export async function updateColumn(data: {
   const validatedData = updateColumnSchema.parse(data);
 
   // Verify ownership
-  const column = await db.kanbanColumn.findUnique({
+  const column = await db.taskColumn.findUnique({
     where: { id: validatedData.id },
     select: { userId: true },
   });
@@ -125,7 +123,7 @@ export async function updateColumn(data: {
     throw new Error("Unauthorized");
   }
 
-  const updatedColumn = await db.kanbanColumn.update({
+  const updatedColumn = await db.taskColumn.update({
     where: { id: validatedData.id },
     data: {
       name: validatedData.name,
@@ -133,7 +131,7 @@ export async function updateColumn(data: {
     },
   });
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return updatedColumn;
 }
 
@@ -147,7 +145,7 @@ export async function deleteColumn(id: string) {
   }
 
   // Verify ownership
-  const column = await db.kanbanColumn.findUnique({
+  const column = await db.taskColumn.findUnique({
     where: { id },
     select: { userId: true },
   });
@@ -157,26 +155,26 @@ export async function deleteColumn(id: string) {
   }
 
   // Delete the column and all its tasks
-  await db.kanbanColumn.delete({
+  await db.taskColumn.delete({
     where: { id },
   });
 
   // Reorder remaining columns
-  const remainingColumns = await db.kanbanColumn.findMany({
+  const remainingColumns = await db.taskColumn.findMany({
     where: { userId: session.user.id },
     orderBy: { order: "asc" },
   });
 
   await Promise.all(
     remainingColumns.map(async (column, index) => {
-      return db.kanbanColumn.update({
+      return db.taskColumn.update({
         where: { id: column.id },
         data: { order: index },
       });
     })
   );
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return { success: true };
 }
 
@@ -190,7 +188,7 @@ export async function reorderColumn(id: string, newOrder: number) {
   }
 
   // Verify ownership
-  const column = await db.kanbanColumn.findUnique({
+  const column = await db.taskColumn.findUnique({
     where: { id },
     select: { userId: true, order: true },
   });
@@ -202,7 +200,7 @@ export async function reorderColumn(id: string, newOrder: number) {
   const oldOrder = column.order;
 
   // Get all columns for the user
-  const columns = await db.kanbanColumn.findMany({
+  const columns = await db.taskColumn.findMany({
     where: { userId: session.user.id },
     orderBy: { order: "asc" },
   });
@@ -230,7 +228,7 @@ export async function reorderColumn(id: string, newOrder: number) {
       }
 
       if (newColOrder !== col.order) {
-        return db.kanbanColumn.update({
+        return db.taskColumn.update({
           where: { id: col.id },
           data: { order: newColOrder },
         });
@@ -238,7 +236,7 @@ export async function reorderColumn(id: string, newOrder: number) {
     })
   );
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return { success: true };
 }
 
@@ -252,15 +250,15 @@ export async function getTasks(userId: string) {
     redirect("/auth/login");
   }
 
-  const tasks = await db.kanbanTask.findMany({
+  const tasks = await db.task.findMany({
     where: {
-      column: {
+      task_column: {
         userId,
       },
     },
     orderBy: { order: "asc" },
     include: {
-      column: {
+      task_column: {
         select: {
           userId: true,
         },
@@ -269,7 +267,7 @@ export async function getTasks(userId: string) {
   });
 
   // Filter out column field
-  return tasks.map(({ column, ...task }) => task);
+  return tasks.map(({ task_column, ...task }) => task);
 }
 
 export async function createTask(data: {
@@ -277,7 +275,7 @@ export async function createTask(data: {
   description?: string;
   dueDate?: string;
   priority: TaskPriority;
-  columnId: string;
+  taskColumnId: string;
 }) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -287,25 +285,11 @@ export async function createTask(data: {
     redirect("/auth/login");
   }
 
-  const createTaskSchema = z.object({
-    title: z.string().min(1).max(100),
-    description: z.string().optional(),
-    dueDate: z.string().optional(),
-    priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
-    columnId: z.string(),
-  });
-
-  const validatedData = createTaskSchema.parse(data) as {
-    title: string;
-    description?: string;
-    dueDate?: string;
-    priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
-    columnId: string;
-  };
+  const validatedData = createTaskSchema.parse(data);
 
   // Verify column ownership
-  const column = await db.kanbanColumn.findUnique({
-    where: { id: validatedData.columnId },
+  const column = await db.taskColumn.findUnique({
+    where: { id: validatedData.taskColumnId },
     select: { userId: true },
   });
 
@@ -314,26 +298,27 @@ export async function createTask(data: {
   }
 
   // Get the highest order value for the column
-  const highestOrder = await db.kanbanTask.findFirst({
-    where: { columnId: validatedData.columnId },
+  const highestOrder = await db.task.findFirst({
+    where: { taskColumnId: validatedData.taskColumnId },
     orderBy: { order: "desc" },
     select: { order: true },
   });
 
   const newOrder = highestOrder ? highestOrder.order + 1 : 0;
 
-  const task = await db.kanbanTask.create({
+  const task = await db.task.create({
     data: {
       title: validatedData.title,
       description: validatedData.description || null,
       dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
       priority: validatedData.priority,
       order: newOrder,
-      columnId: validatedData.columnId,
+      taskColumnId: validatedData.taskColumnId,
+      userId: session.user.id,
     },
   });
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return task;
 }
 
@@ -352,14 +337,6 @@ export async function updateTask(data: {
     redirect("/auth/login");
   }
 
-  const updateTaskSchema = z.object({
-    id: z.string(),
-    title: z.string().min(1).max(100),
-    description: z.string().optional(),
-    dueDate: z.string().nullable().optional(),
-    priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
-  });
-
   const validatedData = updateTaskSchema.parse(data) as {
     id: string;
     title: string;
@@ -369,10 +346,10 @@ export async function updateTask(data: {
   };
 
   // Verify task ownership
-  const task = await db.kanbanTask.findUnique({
+  const task = await db.task.findUnique({
     where: { id: validatedData.id },
     include: {
-      column: {
+      task_column: {
         select: {
           userId: true,
         },
@@ -380,11 +357,11 @@ export async function updateTask(data: {
     },
   });
 
-  if (!task || task.column.userId !== session.user.id) {
+  if (!task || task.task_column.userId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
-  const updatedTask = await db.kanbanTask.update({
+  const updatedTask = await db.task.update({
     where: { id: validatedData.id },
     data: {
       title: validatedData.title,
@@ -394,7 +371,7 @@ export async function updateTask(data: {
     },
   });
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return updatedTask;
 }
 
@@ -408,10 +385,10 @@ export async function deleteTask(id: string) {
   }
 
   // Verify task ownership
-  const task = await db.kanbanTask.findUnique({
+  const task = await db.task.findUnique({
     where: { id },
     include: {
-      column: {
+      task_column: {
         select: {
           userId: true,
         },
@@ -419,31 +396,31 @@ export async function deleteTask(id: string) {
     },
   });
 
-  if (!task || task.column.userId !== session.user.id) {
+  if (!task || task.task_column.userId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
   // Delete the task
-  await db.kanbanTask.delete({
+  await db.task.delete({
     where: { id },
   });
 
   // Reorder remaining tasks in the column
-  const remainingTasks = await db.kanbanTask.findMany({
-    where: { columnId: task.columnId },
+  const remainingTasks = await db.task.findMany({
+    where: { task_column: task.task_column },
     orderBy: { order: "asc" },
   });
 
   await Promise.all(
     remainingTasks.map(async (task, index) => {
-      return db.kanbanTask.update({
+      return db.task.update({
         where: { id: task.id },
         data: { order: index },
       });
     })
   );
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return { success: true };
 }
 
@@ -457,14 +434,14 @@ export async function deleteMultipleTasks(taskIds: string[]) {
   }
 
   // Verify task ownership for all tasks
-  const tasks = await db.kanbanTask.findMany({
+  const tasks = await db.task.findMany({
     where: {
       id: {
         in: taskIds,
       },
     },
     include: {
-      column: {
+      task_column: {
         select: {
           userId: true,
         },
@@ -474,7 +451,7 @@ export async function deleteMultipleTasks(taskIds: string[]) {
 
   // Check if all tasks belong to the current user
   const unauthorized = tasks.some(
-    (task) => task.column.userId !== session.user.id
+    (task) => task.task_column.userId !== session.user.id
   );
   if (unauthorized) {
     throw new Error("Unauthorized");
@@ -483,17 +460,17 @@ export async function deleteMultipleTasks(taskIds: string[]) {
   // Group tasks by column for reordering later
   const columnTaskMap = tasks.reduce(
     (acc, task) => {
-      if (!acc[task.columnId]) {
-        acc[task.columnId] = [];
+      if (!acc[task.taskColumnId]) {
+        acc[task.taskColumnId] = [];
       }
-      acc[task.columnId].push(task.id);
+      acc[task.taskColumnId].push(task.id);
       return acc;
     },
     {} as Record<string, string[]>
   );
 
   // Delete all tasks
-  await db.kanbanTask.deleteMany({
+  await db.task.deleteMany({
     where: {
       id: {
         in: taskIds,
@@ -503,15 +480,15 @@ export async function deleteMultipleTasks(taskIds: string[]) {
 
   // Reorder remaining tasks in each affected column
   await Promise.all(
-    Object.keys(columnTaskMap).map(async (columnId) => {
-      const remainingTasks = await db.kanbanTask.findMany({
-        where: { columnId },
+    Object.keys(columnTaskMap).map(async (taskColumnId) => {
+      const remainingTasks = await db.task.findMany({
+        where: { taskColumnId },
         orderBy: { order: "asc" },
       });
 
       await Promise.all(
         remainingTasks.map(async (task, index) => {
-          return db.kanbanTask.update({
+          return db.task.update({
             where: { id: task.id },
             data: { order: index },
           });
@@ -520,11 +497,15 @@ export async function deleteMultipleTasks(taskIds: string[]) {
     })
   );
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return { success: true };
 }
 
-export async function moveTask(id: string, columnId: string, newOrder: number) {
+export async function moveTask(
+  id: string,
+  taskColumnId: string,
+  newOrder: number
+) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -534,10 +515,10 @@ export async function moveTask(id: string, columnId: string, newOrder: number) {
   }
 
   // Verify task ownership
-  const task = await db.kanbanTask.findUnique({
+  const task = await db.task.findUnique({
     where: { id },
     include: {
-      column: {
+      task_column: {
         select: {
           userId: true,
         },
@@ -545,13 +526,13 @@ export async function moveTask(id: string, columnId: string, newOrder: number) {
     },
   });
 
-  if (!task || task.column.userId !== session.user.id) {
+  if (!task || task.task_column.userId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
   // Verify column ownership
-  const column = await db.kanbanColumn.findUnique({
-    where: { id: columnId },
+  const column = await db.taskColumn.findUnique({
+    where: { id: taskColumnId },
     select: { userId: true },
   });
 
@@ -559,23 +540,22 @@ export async function moveTask(id: string, columnId: string, newOrder: number) {
     throw new Error("Unauthorized");
   }
 
-  const oldColumnId = task.columnId;
-  const oldOrder = task.order;
+  const oldTaskColumnId = task.taskColumnId;
 
   // If moving to a different column
-  if (oldColumnId !== columnId) {
+  if (oldTaskColumnId !== taskColumnId) {
     // Update orders in the old column
-    const oldColumnTasks = await db.kanbanTask.findMany({
+    const oldTasksColumn = await db.task.findMany({
       where: {
-        columnId: oldColumnId,
+        taskColumnId: oldTaskColumnId,
         id: { not: id },
       },
       orderBy: { order: "asc" },
     });
 
     await Promise.all(
-      oldColumnTasks.map(async (t, index) => {
-        return db.kanbanTask.update({
+      oldTasksColumn.map(async (t, index) => {
+        return db.task.update({
           where: { id: t.id },
           data: { order: index },
         });
@@ -583,8 +563,8 @@ export async function moveTask(id: string, columnId: string, newOrder: number) {
     );
 
     // Update orders in the new column
-    const newColumnTasks = await db.kanbanTask.findMany({
-      where: { columnId },
+    const newColumnTasks = await db.task.findMany({
+      where: { taskColumnId },
       orderBy: { order: "asc" },
     });
 
@@ -597,7 +577,7 @@ export async function moveTask(id: string, columnId: string, newOrder: number) {
           newTaskOrder = index + 1;
         }
 
-        return db.kanbanTask.update({
+        return db.task.update({
           where: { id: t.id },
           data: { order: newTaskOrder },
         });
@@ -605,18 +585,18 @@ export async function moveTask(id: string, columnId: string, newOrder: number) {
     );
 
     // Move the task to the new column and position
-    await db.kanbanTask.update({
+    await db.task.update({
       where: { id },
       data: {
-        columnId,
+        taskColumnId,
         order: newOrder,
       },
     });
   } else {
     // Moving within the same column
-    const columnTasks = await db.kanbanTask.findMany({
+    const columnTasks = await db.task.findMany({
       where: {
-        columnId,
+        taskColumnId,
         id: { not: id },
       },
       orderBy: { order: "asc" },
@@ -629,7 +609,7 @@ export async function moveTask(id: string, columnId: string, newOrder: number) {
     // Update all tasks with their new order
     await Promise.all(
       reorderedTasks.map(async (t, index) => {
-        return db.kanbanTask.update({
+        return db.task.update({
           where: { id: t.id },
           data: { order: index },
         });
@@ -637,6 +617,6 @@ export async function moveTask(id: string, columnId: string, newOrder: number) {
     );
   }
 
-  revalidatePath("/kanban");
+  revalidatePath("/tasks");
   return { success: true };
 }

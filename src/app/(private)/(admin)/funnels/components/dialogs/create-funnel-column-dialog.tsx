@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { createFunnelColumn } from "../../actions/funnel-column.action";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -22,34 +22,34 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { createColumn } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
 import ColorPicker from "../color-picker";
 
 const formSchema = z.object({
   name: z
     .string()
-    .min(1, "Nome da coluna é obrigatório")
-    .max(50, "Nome da coluna deve ter menos de 50 caracteres"),
-  color: z.string(),
+    .min(1, "O nome é obrigatório")
+    .max(50, "O nome deve ter no máximo 50 caracteres"),
+  color: z.string().min(1, "A cor é obrigatória"),
 });
 
-interface CreateColumnDialogProps {
+type FormValues = z.infer<typeof formSchema>;
+
+interface CreateFunnelColumnDialogProps {
+  funnelId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  userId: string;
   refreshData: () => Promise<void>;
 }
 
-export default function CreateColumnDialog({
+export default function CreateFunnelColumnDialog({
   open,
   onOpenChange,
-  userId,
+  funnelId,
   refreshData,
-}: CreateColumnDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+}: CreateFunnelColumnDialogProps) {
+  const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -57,35 +57,27 @@ export default function CreateColumnDialog({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
-      setIsSubmitting(true);
-      await createColumn({
-        name: values.name,
-        color: values.color,
-        userId,
-      });
-
-      await refreshData();
-      form.reset();
-      onOpenChange(false);
+      setIsLoading(true);
+      await createFunnelColumn(funnelId, values);
       toast.success("Coluna criada com sucesso");
+      onOpenChange(false);
+      refreshData();
+      form.reset();
     } catch (error) {
       console.error("Failed to create column:", error);
       toast.error("Falha ao criar coluna. Por favor, tente novamente.");
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Criar Nova Coluna</DialogTitle>
-          <DialogDescription>
-            Adicione uma nova coluna ao seu quadro kanban.
-          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -94,7 +86,7 @@ export default function CreateColumnDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome da Coluna</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
                     <Input placeholder="Digite o nome da coluna" {...field} />
                   </FormControl>
@@ -102,6 +94,7 @@ export default function CreateColumnDialog({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="color"
@@ -118,7 +111,7 @@ export default function CreateColumnDialog({
                 </FormItem>
               )}
             />
-            <DialogFooter>
+            <div className="flex justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -126,10 +119,10 @@ export default function CreateColumnDialog({
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Criando..." : "Criar Coluna"}
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Criando..." : "Criar"}
               </Button>
-            </DialogFooter>
+            </div>
           </form>
         </Form>
       </DialogContent>
