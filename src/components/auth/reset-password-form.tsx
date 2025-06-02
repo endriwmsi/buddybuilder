@@ -6,8 +6,8 @@ import { resetPassword } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { PasswordInput } from "./ui/password-input";
-import { Icons } from "./icons";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Icons } from "@/components/icons";
 
 interface ResetPasswordFormProps {
   token: string;

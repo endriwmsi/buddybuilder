@@ -1,6 +1,6 @@
 "use server";
 
-import { registerSchema } from "@/components/register-form";
+import { registerSchema } from "@/components/auth/register-form";
 import { auth, ErrorCode } from "@/lib/auth";
 import { APIError } from "better-auth/api";
 import { z } from "zod";
