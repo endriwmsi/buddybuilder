@@ -1,5 +1,6 @@
+import SendVerificationEmailForm from "@/components/auth/send-verification-email-form";
 import { Icons } from "@/components/icons";
-import SendVerificationEmailForm from "@/components/send-verification-email-form";
+
 import { redirect } from "next/navigation";
 
 interface VerifyPageProps {
