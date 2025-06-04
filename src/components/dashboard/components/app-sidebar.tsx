@@ -10,14 +10,14 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/auth-context";
 import { navMain, teams } from "@/lib/constants";
-import { useAuth } from "@/components/dashboard/components/auth-context";
 
 export function AppSidebar() {
   const { user } = useAuth();
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
         <TeamSwitcher teams={teams} />
       </SidebarHeader>

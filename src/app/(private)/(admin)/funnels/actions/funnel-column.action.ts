@@ -89,7 +89,7 @@ export async function createFunnelColumn(
   return funnelColumn;
 }
 
-export async function updateColumn(data: {
+export async function updateFunnelColumn(data: {
   id: string;
   name: string;
   color: string;
@@ -106,7 +106,7 @@ export async function updateColumn(data: {
 
   // Verify funnel ownership
   const funnelColumn = await db.funnelColumn.findUnique({
-    where: { id: validatedData.id },
+    where: { id: data.id },
     select: { funnelId: true },
   });
 
@@ -115,7 +115,7 @@ export async function updateColumn(data: {
   }
 
   const updatedFunnelColumn = await db.funnelColumn.update({
-    where: { id: validatedData.id },
+    where: { id: data.id },
     data: {
       name: validatedData.name,
       color: validatedData.color,

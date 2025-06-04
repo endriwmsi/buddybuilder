@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { toast } from "sonner";
-import { createLead } from "../../actions/lead.action";
+import { updateLead } from "../../../actions/lead.action";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,135 +39,84 @@ import { CalendarIcon, Trash } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { Lead } from "@/generated/prisma";
+import { UpdateLeadFormData, updateLeadSchema } from "../../../actions/schemas";
+import TagsInput from "@/components/ui/tags-input";
+import { sourceOptions, statusOptions } from "@/lib/constants";
 
-interface CreateLeadDialogProps {
+interface UpdateLeadDialogProps {
+  lead: Lead;
   open: boolean;
+  funnelId?: string;
+  funnelColumnId?: string;
   onOpenChange: (open: boolean) => void;
-  funnelId: string;
-  funnelColumnId: string;
   refreshData: () => Promise<void>;
 }
 
-const sourceOptions = [
-  { value: "WEBSITE", label: "Website" },
-  { value: "REFERRAL", label: "Indicação" },
-  { value: "COLD_CALL", label: "Cold Call" },
-  { value: "EMAIL_CAMPAIGN", label: "Campanha de Email" },
-  { value: "SOCIAL_MEDIA", label: "Redes Sociais" },
-  { value: "EVENT", label: "Evento" },
-  { value: "OTHER", label: "Outro" },
-] as const;
-
-const statusOptions = [
-  { value: "NEW", label: "Novo" },
-  { value: "CONTACTED", label: "Contatado" },
-  { value: "QUALIFIED", label: "Qualificado" },
-  { value: "PROPOSAL", label: "Proposta" },
-  { value: "NEGOTIATION", label: "Negociação" },
-  { value: "WON", label: "Ganho" },
-  { value: "LOST", label: "Perdido" },
-] as const;
-
-const formSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  phone: z.number(),
-  company: z.string(),
-  position: z.string(),
-  value: z.number(),
-  source: z.enum([
-    "WEBSITE",
-    "REFERRAL",
-    "COLD_CALL",
-    "EMAIL_CAMPAIGN",
-    "SOCIAL_MEDIA",
-    "EVENT",
-    "OTHER",
-  ]),
-  status: z.enum([
-    "NEW",
-    "CONTACTED",
-    "QUALIFIED",
-    "PROPOSAL",
-    "NEGOTIATION",
-    "WON",
-    "LOST",
-  ]),
-  description: z.string(),
-  tags: z.string(),
-  expectedClose: z.date(),
-  funnelColumnId: z.string(),
-});
-
-export default function CreateLeadDialog({
+export default function UpdateLeadDialog({
+  lead,
   open,
   onOpenChange,
-  funnelId,
-  funnelColumnId,
   refreshData,
-}: CreateLeadDialogProps) {
-  const [isLoading, setIsLoading] = useState(false);
+}: UpdateLeadDialogProps) {
+  const [isPending, startTransition] = useTransition();
 
-  const formData = useForm({
-    resolver: zodResolver(formSchema),
+  const form = useForm<UpdateLeadFormData>({
+    resolver: zodResolver(updateLeadSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: 0,
-      company: "",
-      position: "",
-      value: 0,
-      source: "OTHER" as const,
-      status: "NEW" as const,
-      description: "",
-      tags: "",
-      expectedClose: new Date(),
-      funnelColumnId,
+      name: lead.name,
+      email: lead.email || undefined,
+      phone: lead.phone || undefined,
+      company: lead.company || undefined,
+      position: lead.position || undefined,
+      description: lead.description || undefined,
+      value: lead.value ? Number(lead.value) : undefined,
+      source: lead.source,
+      status: lead.status,
+      tags: lead.tags || undefined,
+      expectedClose: lead.expectedClose?.toISOString() || undefined,
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsLoading(true);
-      await createLead(funnelId, {
-        ...values,
-        phone: values.phone.toString(),
-        expectedClose: values.expectedClose.toISOString(),
-      });
+  const onSubmit = (values: UpdateLeadFormData) => {
+    startTransition(async () => {
+      try {
+        await updateLead(lead.id, values);
 
-      toast.success("Lead criado com sucesso");
-      onOpenChange(false);
-      formData.reset();
-      refreshData();
-    } catch (error) {
-      console.error("Failed to create lead:", error);
-      toast.error("Falha ao criar Lead. Por favor, tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
+        form.reset();
+        onOpenChange(false);
+        refreshData();
+        toast.success("Lead atualizado com sucesso");
+      } catch (error) {
+        console.error("Failed to save lead:", error);
+        toast.error("Falha ao salvar Lead. Por favor, tente novamente.");
+      }
+    });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Criar Novo Lead</DialogTitle>
+          <DialogTitle>Editar Lead</DialogTitle>
+          <DialogDescription>
+            Atualize as informações do lead no formulário abaixo.
+          </DialogDescription>
         </DialogHeader>
 
-        <Form {...formData}>
-          <form
-            onSubmit={formData.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <FormField
-                control={formData.control}
+                control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nome</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="name" {...field} />
+                      <Input type="text" placeholder="Nome" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -175,7 +124,7 @@ export default function CreateLeadDialog({
               />
 
               <FormField
-                control={formData.control}
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -183,8 +132,9 @@ export default function CreateLeadDialog({
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="Digite o E-mail do Lead"
+                        placeholder="Digite o e-mail do Lead"
                         {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -193,16 +143,31 @@ export default function CreateLeadDialog({
               />
 
               <FormField
-                control={formData.control}
+                control={form.control}
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Telefone</FormLabel>
                     <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="(51) 99999-9999"
-                        {...field}
+                      <PhoneInput {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="value"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Valor</FormLabel>
+                    <FormControl>
+                      <CurrencyInput
+                        placeholder="Ex: R$1.000,00"
+                        className="p-3 text-lg"
+                        onValueChange={(value) => field.onChange(value)}
+                        value={field.value || 0}
                       />
                     </FormControl>
                     <FormMessage />
@@ -211,7 +176,7 @@ export default function CreateLeadDialog({
               />
 
               <FormField
-                control={formData.control}
+                control={form.control}
                 name="company"
                 render={({ field }) => (
                   <FormItem>
@@ -221,6 +186,7 @@ export default function CreateLeadDialog({
                         type="text"
                         placeholder="Digite o nome da empresa"
                         {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -229,7 +195,7 @@ export default function CreateLeadDialog({
               />
 
               <FormField
-                control={formData.control}
+                control={form.control}
                 name="position"
                 render={({ field }) => (
                   <FormItem>
@@ -239,6 +205,7 @@ export default function CreateLeadDialog({
                         type="text"
                         placeholder="Digite o cargo do Lead"
                         {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -247,7 +214,7 @@ export default function CreateLeadDialog({
               />
 
               <FormField
-                control={formData.control}
+                control={form.control}
                 name="source"
                 render={({ field }) => (
                   <FormItem>
@@ -275,8 +242,8 @@ export default function CreateLeadDialog({
               />
 
               <FormField
-                control={formData.control}
-                name="source"
+                control={form.control}
+                name="status"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
@@ -286,7 +253,7 @@ export default function CreateLeadDialog({
                         defaultValue={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione a origem" />
+                          <SelectValue placeholder="Selecione o status" />
                         </SelectTrigger>
                         <SelectContent>
                           {statusOptions.map((option) => (
@@ -303,7 +270,7 @@ export default function CreateLeadDialog({
               />
 
               <FormField
-                control={formData.control}
+                control={form.control}
                 name="expectedClose"
                 render={({ field }) => (
                   <FormItem className="flex w-full flex-col">
@@ -317,7 +284,9 @@ export default function CreateLeadDialog({
                               className={`w- pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
                             >
                               {field.value ? (
-                                format(field.value, "PPP", { locale: ptBR })
+                                format(new Date(field.value), "PPP", {
+                                  locale: ptBR,
+                                })
                               ) : (
                                 <span>Selecione uma data</span>
                               )}
@@ -330,8 +299,12 @@ export default function CreateLeadDialog({
                             locale={ptBR}
                             className="z-10"
                             mode="single"
-                            selected={field.value || undefined}
-                            onSelect={(date) => field.onChange(date)}
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) =>
+                              field.onChange(date?.toISOString())
+                            }
                             initialFocus={false}
                           />
                         </PopoverContent>
@@ -341,7 +314,7 @@ export default function CreateLeadDialog({
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => field.onChange(null)}
+                          onClick={() => field.onChange(undefined)}
                         >
                           <Trash className="h-4 w-4" />
                         </Button>
@@ -354,16 +327,16 @@ export default function CreateLeadDialog({
             </div>
 
             <FormField
-              control={formData.control}
+              control={form.control}
               name="tags"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tags</FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Digite as tags separadas por vírgula"
-                      {...field}
+                    <TagsInput
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      placeholder="Digite as tags e pressione espaço ou enter"
                     />
                   </FormControl>
                   <FormMessage />
@@ -372,7 +345,7 @@ export default function CreateLeadDialog({
             />
 
             <FormField
-              control={formData.control}
+              control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
@@ -381,6 +354,7 @@ export default function CreateLeadDialog({
                     <Textarea
                       placeholder="Digite uma descrição do lead"
                       {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -396,8 +370,8 @@ export default function CreateLeadDialog({
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Criando..." : "Criar"}
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Salvando..." : "Salvar"}
               </Button>
             </div>
           </form>

@@ -43,15 +43,16 @@ export async function getFunnels(userId: string) {
       where: {
         userId,
       },
-      include: {
-        columns: {
-          orderBy: {
-            order: "asc",
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        _count: {
+          select: {
+            columns: true,
+            Lead: true,
           },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
       },
     });
 

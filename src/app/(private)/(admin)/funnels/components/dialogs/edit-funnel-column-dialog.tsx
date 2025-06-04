@@ -23,9 +23,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { updateColumn } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
 import ColorPicker from "../color-picker";
 import { FunnelColumn } from "@/generated/prisma";
+import { updateFunnelColumn } from "../../actions/funnel-column.action";
 
 const formSchema = z.object({
   name: z
@@ -71,7 +71,7 @@ export default function EditFunnelColumnDialog({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      await updateColumn({
+      await updateFunnelColumn({
         id: funnelColumn.id,
         name: values.name,
         color: values.color,

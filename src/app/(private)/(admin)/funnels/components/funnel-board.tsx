@@ -6,26 +6,27 @@ import { Plus, List, Kanban } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/components/dashboard/components/auth-context";
 import { FunnelColumn, Lead } from "@/generated/prisma";
 import {
   getFunnelColumns,
   reorderFunnelColumn,
 } from "../actions/funnel-column.action";
 import { getLeads, moveLead } from "../actions/lead.action";
+import { getFunnelById } from "../actions/funnel.action";
 import CreateFunnelColumnDialog from "./dialogs/create-funnel-column-dialog";
 import FunnelColumns from "./funnel-column";
 import LeadsTable from "./leads-table";
+import { Icons } from "@/components/icons";
 
 interface FunnelBoardProps {
   funnelId: string;
 }
 
 export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
-  const { user } = useAuth();
+  const [funnel, setFunnel] = useState<any>(null);
   const [funnelColumns, setFunnelColumns] = useState<FunnelColumn[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isCreateFunnelColumnOpen, setIsCreateFunnelColumnOpen] =
     useState(false);
   const [viewMode, setViewMode] = useState<"kanban" | "list">(() => {
@@ -46,9 +47,13 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
     const loadKanbanData = async () => {
       try {
         setIsLoading(true);
-        const funnelColumnsData = await getFunnelColumns(funnelId);
-        const leadsData = await getLeads(funnelId);
+        const [funnelData, funnelColumnsData, leadsData] = await Promise.all([
+          getFunnelById(funnelId),
+          getFunnelColumns(funnelId),
+          getLeads(funnelId),
+        ]);
 
+        setFunnel(funnelData);
         setFunnelColumns(funnelColumnsData);
         setLeads(leadsData);
       } catch (error) {
@@ -183,37 +188,47 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
 
   if (isLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2"></div>
+      <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Icons.spinner className="text-primary h-8 w-8 animate-spin" />
+          <p className="text-muted-foreground text-sm">
+            Carregando dados do funil...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-4">
-      <div className="flex items-center justify-end gap-4">
-        <Tabs
-          value={viewMode}
-          onValueChange={(value) => setViewMode(value as "kanban" | "list")}
-        >
-          <TabsList className="grid grid-cols-2">
-            <TabsTrigger value="kanban">
-              <Kanban className="mr-2 h-4 w-4" />
-            </TabsTrigger>
-            <TabsTrigger value="list">
-              <List className="mr-2 h-4 w-4" />
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Button onClick={() => setIsCreateFunnelColumnOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Adicionar Coluna
-        </Button>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">
+          {funnel?.name || "Carregando..."}
+        </h1>
+        <div className="flex items-center gap-4">
+          <Tabs
+            value={viewMode}
+            onValueChange={(value) => setViewMode(value as "kanban" | "list")}
+          >
+            <TabsList className="grid grid-cols-2">
+              <TabsTrigger value="kanban">
+                <Kanban className="mr-2 h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="list">
+                <List className="mr-2 h-4 w-4" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button onClick={() => setIsCreateFunnelColumnOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Adicionar Coluna
+          </Button>
+        </div>
       </div>
 
-      <div className="max-w-[1560px]">
+      <div className="max-w-[1530px] overflow-x-hidden">
         {viewMode === "kanban" ? (
-          <div className="">
+          <div>
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable
                 droppableId="all-columns"

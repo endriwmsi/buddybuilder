@@ -4,7 +4,13 @@ import { useState } from "react";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +23,7 @@ import DeleteConfirmDialog from "../../tasks/components/dialogs/delete-confirm-d
 import { FunnelColumn, Lead } from "@/generated/prisma";
 import LeadItem from "./lead-item";
 import EditFunnelColumnDialog from "./dialogs/edit-funnel-column-dialog";
-import CreateLeadDialog from "./dialogs/create-lead-dialog";
+import CreateLeadDialog from "./dialogs/leads/create-lead-dialog";
 
 interface FunnelColumnsProps {
   funnelColumn: FunnelColumn;
@@ -57,11 +63,11 @@ export default function FunnelColumns({
           className="w-80 flex-shrink-0"
         >
           <Card
-            className="flex h-max flex-col overflow-hidden border-t-4"
+            className="flex h-max flex-col rounded-sm border-t-4"
             style={{ borderTop: `4px solid ${funnelColumn.color}` }}
             {...provided.dragHandleProps}
           >
-            <CardHeader className="border-b">
+            <CardHeader className="border-b px-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CardTitle>{funnelColumn.name}</CardTitle>
@@ -93,28 +99,31 @@ export default function FunnelColumns({
               </div>
             </CardHeader>
 
-            <Droppable droppableId={funnelColumn.id} type="task">
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className={`flex-1 overflow-y-auto p-2 ${snapshot.isDraggingOver ? "bg-muted/50" : ""}`}
-                  style={{ minHeight: "200px" }}
-                >
-                  {leads.map((lead, index) => (
-                    <LeadItem
-                      key={lead.id}
-                      lead={lead}
-                      index={index}
-                      columnName={funnelColumn.name}
-                      refreshData={refreshData}
-                    />
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-            <CardFooter className="border-t">
+            <CardContent className="-mt-6 p-0">
+              <Droppable droppableId={funnelColumn.id} type="task">
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className={`flex-1 overflow-y-auto p-2 ${snapshot.isDraggingOver ? "bg-muted/50" : ""}`}
+                    style={{ minHeight: "200px" }}
+                  >
+                    {leads.map((lead, index) => (
+                      <LeadItem
+                        key={lead.id}
+                        lead={lead}
+                        index={index}
+                        columnName={funnelColumn.name}
+                        refreshData={refreshData}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </CardContent>
+
+            <CardFooter className="-mt-8 border-t px-2">
               <Button
                 variant="ghost"
                 className="text-muted-foreground w-full justify-start"

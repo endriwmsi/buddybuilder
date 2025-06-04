@@ -13,10 +13,11 @@ import {
   moveTask,
 } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
 import TasksTable from "./tasks-table";
-import { useAuth } from "@/components/dashboard/components/auth-context";
+import { useAuth } from "@/contexts/auth-context";
 import CreateColumnDialog from "./dialogs/create-column-dialog";
 import { Task, TaskColumn } from "@/generated/prisma";
 import TasksColumn from "./tasks-column";
+import { Icons } from "@/components/icons";
 
 export default function TasksBoard() {
   const { user } = useAuth();
@@ -175,8 +176,11 @@ export default function TasksBoard() {
 
   if (isLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="border-primary h-12 w-12 animate-spin rounded-full border-b-2"></div>
+      <div className="flex h-[calc(100vh-15rem)] w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Icons.spinner className="text-primary h-8 w-8 animate-spin" />
+          <p className="text-muted-foreground text-sm">Carregando tarefas...</p>
+        </div>
       </div>
     );
   }
@@ -203,46 +207,50 @@ export default function TasksBoard() {
         </Button>
       </div>
 
-      {viewMode === "kanban" ? (
-        <div className="">
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable
-              droppableId="all-columns"
-              direction="horizontal"
-              type="column"
-            >
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="flex gap-4 overflow-x-auto pb-4"
-                >
-                  {taskColumns
-                    .sort((a, b) => a.order - b.order)
-                    .map((taskColum, index) => (
-                      <TasksColumn
-                        key={taskColum.id}
-                        taskColumn={taskColum}
-                        tasks={tasks
-                          .filter((task) => task.taskColumnId === taskColum.id)
-                          .sort((a, b) => a.order - b.order)}
-                        index={index}
-                        refreshData={refreshData}
-                      />
-                    ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </div>
-      ) : (
-        <TasksTable
-          tasks={tasks}
-          taskColumns={taskColumns}
-          refreshData={refreshData}
-        />
-      )}
+      <div className="max-w-[1530px] overflow-x-hidden">
+        {viewMode === "kanban" ? (
+          <div>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable
+                droppableId="all-columns"
+                direction="horizontal"
+                type="column"
+              >
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="flex gap-4 overflow-x-auto pb-4"
+                  >
+                    {taskColumns
+                      .sort((a, b) => a.order - b.order)
+                      .map((taskColum, index) => (
+                        <TasksColumn
+                          key={taskColum.id}
+                          taskColumn={taskColum}
+                          tasks={tasks
+                            .filter(
+                              (task) => task.taskColumnId === taskColum.id
+                            )
+                            .sort((a, b) => a.order - b.order)}
+                          index={index}
+                          refreshData={refreshData}
+                        />
+                      ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </div>
+        ) : (
+          <TasksTable
+            tasks={tasks}
+            taskColumns={taskColumns}
+            refreshData={refreshData}
+          />
+        )}
+      </div>
 
       <CreateColumnDialog
         open={isCreateColumnOpen}

@@ -196,7 +196,7 @@ model Lead {
   position String?
 
   // Informações de negócio
-  value  Decimal?   @db.Decimal(10, 2)
+  value  Float
   source LeadSource @default(OTHER)
   status LeadStatus @default(NEW)
 

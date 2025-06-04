@@ -12,7 +12,7 @@ interface FunnelPageProps {
 const FunnelPage = ({ params }: FunnelPageProps) => {
   const { id } = use(params);
   return (
-    <div className="flex items-center p-8">
+    <div className="flex flex-1 flex-col gap-4 px-4 py-10">
       <FunnelBoard funnelId={id} />
     </div>
   );

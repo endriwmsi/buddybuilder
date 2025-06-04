@@ -11,7 +11,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Lead } from "@/generated/prisma";
-import LeadDetailsDialog from "./dialogs/lead-details-dialog";
+import LeadDetailsDialog from "./dialogs/leads/lead-details-dialog";
+import { sourceOptions, statusTranslations } from "@/lib/constants";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface LeadItemProps {
   lead: Lead;
@@ -27,6 +34,52 @@ export default function LeadItem({
   refreshData,
 }: LeadItemProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  const items = [
+    {
+      type: "column",
+      content: columnName,
+    },
+    ...(lead.source
+      ? [
+          {
+            type: "source",
+            content: sourceOptions.find(
+              (option) => option.value === lead.source
+            )?.label,
+          },
+        ]
+      : []),
+    ...(lead.status
+      ? [
+          {
+            type: "status",
+            content: statusTranslations[lead.status],
+          },
+        ]
+      : []),
+    ...(lead.tags
+      ? [
+          {
+            type: "tags",
+            content: lead.tags,
+          },
+        ]
+      : []),
+    ...(lead.createdAt
+      ? [
+          {
+            type: "date",
+            content: new Date(lead.createdAt).toLocaleDateString(),
+            icon: CalendarCheck2,
+          },
+        ]
+      : []),
+  ];
+
+  // Split items into visible and hidden
+  const visibleItems = items.slice(0, 3);
+  const hiddenItems = items.slice(3);
 
   return (
     <>
@@ -45,38 +98,48 @@ export default function LeadItem({
               onClick={() => setIsDetailsOpen(true)}
             >
               <CardHeader className="p-0">
-                <CardDescription>{lead.name}</CardDescription>
-                <CardTitle className="truncate">{lead.company}</CardTitle>
+                <CardTitle className="truncate">{lead.name}</CardTitle>
+                <CardDescription>{lead.company}</CardDescription>
               </CardHeader>
 
-              <CardFooter className="gap-2 p-0">
-                {/* <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <div
-                        className={cn(
-                          `rounded-sm border p-1`,
-                          priorityConfig.color
-                        )}
-                      >
-                        {getPriorityIcon(task.priority)}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>{priorityConfig.label}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider> */}
-
-                <div className="text-muted-foreground w-max rounded-sm border px-2 py-1 text-xs">
-                  <span className="flex items-center gap-2">{columnName}</span>
-                </div>
-
-                {lead.createdAt && (
-                  <div className="text-muted-foreground w-max rounded-sm border px-2 py-1 text-xs">
+              <CardFooter className="gap-2 overflow-hidden p-0">
+                {visibleItems.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="text-muted-foreground w-max rounded-sm border px-2 py-1 text-xs"
+                  >
                     <span className="flex items-center gap-2">
-                      <CalendarCheck2 className="h-4 w-4" />
-                      {new Date(lead.createdAt).toLocaleDateString()}
+                      {item.icon && <item.icon className="h-4 w-4" />}
+                      {item.content}
                     </span>
                   </div>
+                ))}
+
+                {hiddenItems.length > 0 && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="text-muted-foreground w-max cursor-pointer rounded-sm border px-2 py-1 text-xs">
+                          <span className="flex items-center gap-2">
+                            +{hiddenItems.length}
+                          </span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-muted/30 flex flex-wrap gap-2 p-2">
+                        {hiddenItems.map((item, idx) => (
+                          <div
+                            key={idx}
+                            className="text-muted-foreground w-max rounded-sm border px-2 py-1 text-xs"
+                          >
+                            <span className="flex items-center gap-2">
+                              {item.icon && <item.icon className="h-4 w-4" />}
+                              {item.content}
+                            </span>
+                          </div>
+                        ))}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </CardFooter>
             </Card>
