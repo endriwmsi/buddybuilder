@@ -9,7 +9,6 @@ import { useAuth } from "@/contexts/auth-context";
 const FunnelsHeader = () => {
   const { user } = useAuth();
   const [isCreateFunnelDialogOpen, setCreateFunnelDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="mb-6 flex items-center justify-end">
