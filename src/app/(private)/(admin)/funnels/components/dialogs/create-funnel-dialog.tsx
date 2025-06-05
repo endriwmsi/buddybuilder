@@ -81,7 +81,7 @@ export default function CreateFunnelDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Criar Nova Coluna</DialogTitle>
+          <DialogTitle>Criar Novo Funil</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
