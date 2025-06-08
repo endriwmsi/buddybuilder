@@ -3,9 +3,9 @@ import { ProjectPlanDetail } from "@/app/(private)/(admin)/project-plans/compone
 import { getProjectPlan } from "@/app/(private)/(admin)/project-plans/actions/plan.action";
 
 interface ProjectPlanPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export const metadata: Metadata = {

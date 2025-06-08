@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import db from "@/lib/prisma";
 import { openai } from "@/lib/openai";
 import { detailedActionPrompt } from "@/lib/prompts/detailed-action";
+import db from "@/lib/prisma";
+import { NextRequest } from "next/server";
 
 export async function POST(
-  req: Request,
-  { params }: { params: { id: string; actionId: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string; actionId: string }> }
 ) {
+  const { id, actionId } = await context.params;
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -20,13 +22,13 @@ export async function POST(
 
     const projectPlan = await db.projectPlan.findUnique({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id,
       },
       include: {
         actions: {
           where: {
-            id: params.actionId,
+            id: actionId,
           },
         },
       },

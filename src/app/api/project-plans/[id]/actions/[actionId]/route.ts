@@ -5,8 +5,10 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string; actionId: string } }
+  context: { params: Promise<{ id: string; actionId: string }> }
 ) {
+  const { id, actionId } = await context.params;
+
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -21,7 +23,7 @@ export async function PATCH(
 
     const projectPlan = await db.projectPlan.findUnique({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id,
       },
     });
@@ -32,8 +34,8 @@ export async function PATCH(
 
     const action = await db.planAction.update({
       where: {
-        id: params.actionId,
-        projectPlanId: params.id,
+        id: actionId,
+        projectPlanId: id,
       },
       data: {
         isSelected,
