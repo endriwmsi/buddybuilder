@@ -24,8 +24,8 @@ export const navMain = [
     icon: IconChartFunnelFilled,
   },
   {
-    title: "Projects",
-    url: "#",
+    title: "Projetos",
+    url: "/project-plans",
     icon: IconFolder,
   },
   {

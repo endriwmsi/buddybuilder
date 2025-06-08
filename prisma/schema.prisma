@@ -20,6 +20,12 @@ enum TaskPriority {
   URGENT
 }
 
+enum ActionPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 enum LeadStatus {
   NEW
   CONTACTED
@@ -37,6 +43,15 @@ enum LeadSource {
   EMAIL_CAMPAIGN
   SOCIAL_MEDIA
   EVENT
+  OTHER
+}
+
+enum BusinessSector {
+  HEALTH
+  SAAS
+  ECOMMERCE
+  FOOD
+  EDUCATION
   OTHER
 }
 
@@ -58,6 +73,8 @@ model User {
   TaskColumn TaskColumn[]
 
   Funnel Funnel[]
+
+  ProjectPlan ProjectPlan[]
 
   @@map("users")
 }
@@ -214,4 +231,68 @@ model Lead {
   funnelColumn   FunnelColumn @relation(fields: [funnelColumnId], references: [id], onDelete: Cascade)
 
   @@map("leads")
+}
+
+model ProjectPlan {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+  sector      BusinessSector
+
+  // Sector-specific answers stored as JSON
+  sectorDetails Json?
+
+  // Marketing and Commercial maturity levels
+  marketingMaturity  String
+  commercialMaturity String
+
+  // Marketing and Commercial goals
+  marketingGoal  String?
+  commercialGoal String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relations
+  actions PlanAction[]
+
+  @@map("project_plans")
+}
+
+model PlanAction {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String
+  isSelected  Boolean        @default(false)
+  order       Int
+  priority    ActionPriority @default(MEDIUM)
+
+  projectPlanId String
+  projectPlan   ProjectPlan @relation(fields: [projectPlanId], references: [id], onDelete: Cascade)
+
+  // Detailed actions for this plan action
+  detailedActions DetailedAction[]
+
+  @@map("plan_actions")
+}
+
+model DetailedAction {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String
+  order       Int
+
+  planActionId String
+  planAction   PlanAction @relation(fields: [planActionId], references: [id], onDelete: Cascade)
+
+  @@map("detailed_actions")
 }
