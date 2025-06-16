@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+melhorias-tecnicas.md
 
 # debug
 npm-debug.log*
