@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { DetailedAction, PlanAction } from "@/generated/prisma";
 import { Checkbox } from "@/components/ui/checkbox";
+import { motion } from "framer-motion";
 
 interface ActionCardProps {
   action: PlanAction & {
@@ -71,6 +72,31 @@ const parseDetailedDescription = (description: string): DetailedDescription => {
   }
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 10,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut",
+    },
+  },
+};
+
 export function ActionCard({
   action,
   isSelected,
@@ -84,14 +110,17 @@ export function ActionCard({
     <>
       <Card
         className={cn(
-          "group relative p-4 transition-all duration-200 hover:shadow-md",
+          "group relative p-3 transition-all duration-200 hover:shadow-md sm:p-4",
           isDialogOpen && "ring-primary ring-2",
           isRefined && "hover:bg-muted/50 cursor-pointer"
         )}
         onClick={() => isRefined && setIsDialogOpen(true)}
       >
         <div
-          className={cn("flex gap-3", viewMode === "list" && "items-center")}
+          className={cn(
+            "flex gap-2 sm:gap-3",
+            viewMode === "list" && "items-center"
+          )}
         >
           {!isRefined && (
             <div className="flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -105,16 +134,16 @@ export function ActionCard({
               />
             </div>
           )}
-          <div className="flex flex-1 flex-col gap-1.5">
-            <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-1 flex-col gap-1 sm:gap-1.5">
+            <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-start sm:gap-2">
               <h3 className="line-clamp-1 text-sm font-medium">
                 {action.title}
               </h3>
-              <div className="flex shrink-0 gap-1.5">
+              <div className="flex shrink-0 flex-wrap gap-1 sm:gap-1.5">
                 <Badge
                   variant="secondary"
                   className={cn(
-                    "h-5 px-1.5 text-xs font-medium",
+                    "h-5 px-1.5 text-[10px] font-medium sm:text-xs",
                     getPriorityColor(action.priority)
                   )}
                 >
@@ -123,14 +152,14 @@ export function ActionCard({
                 {isRefined && (
                   <Badge
                     variant="outline"
-                    className="h-5 border-green-500 bg-green-600/20 px-1.5 text-xs text-green-500"
+                    className="h-5 border-green-500 bg-green-600/20 px-1.5 text-[10px] text-green-500 sm:text-xs"
                   >
                     Refinada
                   </Badge>
                 )}
               </div>
             </div>
-            <p className="line-clamp-2 text-xs text-gray-400">
+            <p className="line-clamp-2 text-[11px] text-gray-400 sm:text-xs">
               {action.description}
             </p>
           </div>
@@ -138,56 +167,84 @@ export function ActionCard({
       </Card>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="flex max-h-[90vh] max-w-4xl flex-col overflow-hidden">
-          <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-lg">{action.title}</DialogTitle>
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "mr-5 h-6 px-2 text-sm font-medium",
-                  getPriorityColor(action.priority)
-                )}
-              >
-                {getPriorityText(action.priority)}
-              </Badge>
+        <DialogContent className="flex max-h-[90vh] max-w-3xl flex-col overflow-hidden p-4 sm:p-6">
+          <DialogHeader className="space-y-2">
+            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+              <DialogTitle className="text-base sm:text-lg">
+                {action.title}
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    "ml-3 h-5 px-2 text-xs font-medium",
+                    getPriorityColor(action.priority)
+                  )}
+                >
+                  {getPriorityText(action.priority)}
+                </Badge>
+              </DialogTitle>
             </div>
-            <DialogDescription className="text-sm">
+            <DialogDescription className="text-xs sm:text-sm">
               {action.description}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 overflow-y-auto pr-2">
+          <div className="space-y-3 overflow-y-auto pr-2 sm:space-y-4">
             {action.detailedActions.map((detailedAction) => {
               const details = parseDetailedDescription(
                 detailedAction.description
               );
               return (
-                <div key={detailedAction.id} className="space-y-3 text-sm">
-                  <div className="rounded-lg border p-3">
-                    <h4 className="mb-2 text-base font-semibold">Objetivo</h4>
-                    <div className="text-sm whitespace-pre-line">
+                <motion.div
+                  key={detailedAction.id}
+                  className="space-y-2 text-xs sm:space-y-3 sm:text-sm"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <motion.div
+                    variants={itemVariants}
+                    className="rounded-lg border p-2 sm:p-3"
+                  >
+                    <h4 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
+                      Objetivo
+                    </h4>
+                    <div className="whitespace-pre-line">
                       {details.objective}
                     </div>
-                  </div>
-                  <div className="rounded-lg border p-3">
-                    <h4 className="mb-2 text-base font-semibold">Execução</h4>
-                    <div className="text-sm whitespace-pre-line">
+                  </motion.div>
+                  <motion.div
+                    variants={itemVariants}
+                    className="rounded-lg border p-2 sm:p-3"
+                  >
+                    <h4 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
+                      Execução
+                    </h4>
+                    <div className="whitespace-pre-line">
                       {details.execution}
                     </div>
-                  </div>
-                  <div className="rounded-lg border p-3">
-                    <h4 className="mb-2 text-base font-semibold">Conclusão</h4>
-                    <div className="text-sm whitespace-pre-line">
+                  </motion.div>
+                  <motion.div
+                    variants={itemVariants}
+                    className="rounded-lg border p-2 sm:p-3"
+                  >
+                    <h4 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
+                      Conclusão
+                    </h4>
+                    <div className="whitespace-pre-line">
                       {details.conclusion}
                     </div>
-                  </div>
-                  <div className="rounded-lg border p-3">
-                    <h4 className="mb-2 text-base font-semibold">Subtarefas</h4>
-                    <div className="text-sm whitespace-pre-line">
+                  </motion.div>
+                  <motion.div
+                    variants={itemVariants}
+                    className="rounded-lg border p-2 sm:p-3"
+                  >
+                    <h4 className="mb-1 text-sm font-semibold sm:mb-2 sm:text-base">
+                      Subtarefas
+                    </h4>
+                    <div className="whitespace-pre-line">
                       {details.subtasks}
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               );
             })}
           </div>
