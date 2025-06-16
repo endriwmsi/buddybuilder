@@ -5,7 +5,7 @@ import {
   IconChartFunnelFilled,
   IconListDetails,
 } from "@tabler/icons-react";
-import { AudioWaveform, Command, GalleryVerticalEnd } from "lucide-react";
+import { GalleryVerticalEnd } from "lucide-react";
 
 export const navMain = [
   {
@@ -37,20 +37,20 @@ export const navMain = [
 
 export const teams = [
   {
-    name: "Acme Inc",
+    name: "BuddyBuilder",
     logo: GalleryVerticalEnd,
     plan: "Enterprise",
   },
-  {
-    name: "Acme Corp.",
-    logo: AudioWaveform,
-    plan: "Startup",
-  },
-  {
-    name: "Evil Corp.",
-    logo: Command,
-    plan: "Free",
-  },
+  // {
+  //   name: "Acme Corp.",
+  //   logo: AudioWaveform,
+  //   plan: "Startup",
+  // },
+  // {
+  //   name: "Evil Corp.",
+  //   logo: Command,
+  //   plan: "Free",
+  // },
 ];
 
 export const sourceOptions = [

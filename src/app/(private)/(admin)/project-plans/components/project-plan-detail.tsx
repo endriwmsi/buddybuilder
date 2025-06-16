@@ -8,8 +8,10 @@ import { toast } from "sonner";
 import { ActionCard } from "./action-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, LayoutGrid, List } from "lucide-react";
 import { ProjectDetails } from "./project-details";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/lib/utils";
 
 interface ProjectPlanDetailProps {
   projectPlan: ProjectPlan & {
@@ -26,6 +28,7 @@ export function ProjectPlanDetail({ projectPlan }: ProjectPlanDetailProps) {
     Record<string, boolean>
   >({});
   const [isGenerating, setIsGenerating] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const handleSelectionChange = (actionId: string, checked: boolean) => {
     setSelectedActions((prev) => ({
@@ -87,10 +90,26 @@ export function ProjectPlanDetail({ projectPlan }: ProjectPlanDetailProps) {
               <TabsTrigger value="refined">Ações Refinadas</TabsTrigger>
             </TabsList>
 
-            {hasSelectedActions && (
+            <div className="flex items-center gap-4">
+              <ToggleGroup
+                type="single"
+                value={viewMode}
+                onValueChange={(value) =>
+                  value && setViewMode(value as "grid" | "list")
+                }
+              >
+                <ToggleGroupItem value="grid" aria-label="Grid view">
+                  <LayoutGrid className="h-4 w-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="list" aria-label="List view">
+                  <List className="h-4 w-4" />
+                </ToggleGroupItem>
+              </ToggleGroup>
+
               <Button
                 onClick={handleGenerateDetailedActions}
-                disabled={isGenerating}
+                disabled={isGenerating || !hasSelectedActions}
+                className="cursor-pointer"
               >
                 {isGenerating ? (
                   <>
@@ -101,35 +120,55 @@ export function ProjectPlanDetail({ projectPlan }: ProjectPlanDetailProps) {
                   "Gerar Detalhamentos Selecionados"
                 )}
               </Button>
-            )}
+            </div>
           </div>
 
           <TabsContent value="details" className="mt-4">
             <ProjectDetails projectPlan={projectPlan} />
           </TabsContent>
 
-          <TabsContent value="general" className="mt-4 space-y-4">
-            {projectPlan.actions.map((action) => (
-              <ActionCard
-                key={action.id}
-                action={action}
-                isSelected={selectedActions[action.id] || false}
-                onSelectionChange={handleSelectionChange}
-              />
-            ))}
-          </TabsContent>
-
-          <TabsContent value="refined" className="mt-4 space-y-4">
-            {projectPlan.actions
-              .filter((action) => action.detailedActions.length > 0)
-              .map((action) => (
+          <TabsContent value="general" className="mt-4">
+            <div
+              className={cn(
+                "gap-4",
+                viewMode === "grid"
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                  : "flex flex-col"
+              )}
+            >
+              {projectPlan.actions.map((action) => (
                 <ActionCard
                   key={action.id}
                   action={action}
                   isSelected={selectedActions[action.id] || false}
                   onSelectionChange={handleSelectionChange}
+                  viewMode={viewMode}
                 />
               ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="refined" className="mt-4">
+            <div
+              className={cn(
+                "gap-4",
+                viewMode === "grid"
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                  : "flex flex-col"
+              )}
+            >
+              {projectPlan.actions
+                .filter((action) => action.detailedActions.length > 0)
+                .map((action) => (
+                  <ActionCard
+                    key={action.id}
+                    action={action}
+                    isSelected={selectedActions[action.id] || false}
+                    onSelectionChange={handleSelectionChange}
+                    viewMode={viewMode}
+                  />
+                ))}
+            </div>
           </TabsContent>
         </Tabs>
       </div>
