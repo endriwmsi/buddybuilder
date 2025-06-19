@@ -20,12 +20,12 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
   [BusinessSector.ECOMMERCE]: [
     {
       question: "Quais categorias de produtos são mais lucrativas?",
-      key: "profitableCategories",
+      key: "Quais categorias de produtos são mais lucrativas?",
       type: "text",
     },
     {
       question: "Aplicam estratégias upsell cross-sell?",
-      key: "upsellCrossSell",
+      key: "Aplicam estratégias upsell cross-sell?",
       type: "select",
       options: [
         { label: "Não aplicamos", value: "Não aplicamos" },
@@ -41,22 +41,22 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Principais canais de venda",
-      key: "mainSalesChannels",
+      key: "Principais canais de venda",
       type: "text",
     },
     {
       question: "Volume médio de pedidos por mês",
-      key: "averageMonthlyOrders",
+      key: "Volume médio de pedidos por mês",
       type: "text",
     },
     {
       question: "Taxa média de abandono de carrinho",
-      key: "cartAbandonmentRate",
+      key: "Taxa média de abandono de carrinho",
       type: "text",
     },
     {
       question: "Trabalham com remarketing?",
-      key: "remarketing",
+      key: "Trabalham com remarketing?",
       type: "select",
       options: [
         { label: "Não utilizamos", value: "Não utilizamos" },
@@ -72,7 +72,7 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Existe uma estratégia de recuperação de Carrinho?",
-      key: "cartRecoveryStrategy",
+      key: "Existe uma estratégia de recuperação de Carrinho?",
       type: "select",
       options: [
         { label: "Não temos estratégia", value: "Não temos estratégia" },
@@ -87,12 +87,12 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
   [BusinessSector.SAAS]: [
     {
       question: "Qual é o principal produto ou solução oferecida?",
-      key: "mainProduct",
+      key: "Qual é o principal produto ou solução oferecida?",
       type: "text",
     },
     {
       question: "Qual é o modelo de receita?",
-      key: "revenueModel",
+      key: "Qual é o modelo de receita?",
       type: "radio",
       options: [
         {
@@ -107,17 +107,17 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Qual é o ticket médio por cliente?",
-      key: "averageTicket",
+      key: "Qual é o ticket médio por cliente?",
       type: "text",
     },
     {
       question: "Qual a taxa de churn mensal?",
-      key: "monthlyChurnRate",
+      key: "Qual a taxa de churn mensal?",
       type: "text",
     },
     {
       question: "Quais canais de aquisição são mais eficientes?",
-      key: "acquisitionChannels",
+      key: "Quais canais de aquisição são mais eficientes?",
       type: "checkbox",
       options: [
         { label: "Marketing de conteúdo", value: "Marketing de conteúdo" },
@@ -130,7 +130,7 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Vocês fazem expansão de receita em clientes atuais?",
-      key: "revenueExpansion",
+      key: "Vocês fazem expansão de receita em clientes atuais?",
       type: "radio",
       options: [
         { label: "Não fazemos ativamente", value: "Não fazemos ativamente" },
@@ -151,13 +151,13 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     {
       question:
         "Quais dos serviços oferecidos têm maior procura ou geram mais lucro?",
-      key: "mostProfitableServices",
+      key: "Quais dos serviços oferecidos têm maior procura ou geram mais lucro?",
       type: "text",
     },
     {
       question:
         "Sua clínica oferece outros serviços complementares no mesmo atendimento?",
-      key: "complementaryServices",
+      key: "Sua clínica oferece outros serviços complementares no mesmo atendimento?",
       type: "radio",
       options: [
         {
@@ -181,7 +181,7 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "A empresa atende:",
-      key: "serviceType",
+      key: "A empresa atende:",
       type: "radio",
       options: [
         { label: "Apenas particular", value: "Apenas particular" },
@@ -191,12 +191,12 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Quais especialidades ou serviços são oferecidos?",
-      key: "customServices",
+      key: "Quais especialidades ou serviços são oferecidos?",
       type: "text",
     },
     {
       question: "Como os pacientes costumam marcar consultas?",
-      key: "appointmentChannels",
+      key: "Como os pacientes costumam marcar consultas?",
       type: "checkbox",
       options: [
         { label: "Telefone", value: "Telefone" },
@@ -211,7 +211,7 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Existe alguma sazonalidade ou pico de demanda?",
-      key: "seasonality",
+      key: "Existe alguma sazonalidade ou pico de demanda?",
       type: "radio",
       options: [
         {
@@ -227,14 +227,14 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     {
       question:
         "Como vocês se relacionam com os pacientes fora do atendimento?",
-      key: "patientRelationship",
+      key: "Como vocês se relacionam com os pacientes fora do atendimento?",
       type: "text",
     },
   ],
   [BusinessSector.FOOD]: [
     {
       question: "Tipo de estabelecimento",
-      key: "establishmentType",
+      key: "Tipo de estabelecimento",
       type: "select",
       options: [
         { label: "Restaurante", value: "Restaurante" },
@@ -248,17 +248,17 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Quais os pratos ou produtos mais populares?",
-      key: "popularItems",
+      key: "Quais os pratos ou produtos mais populares?",
       type: "text",
     },
     {
       question: "Qual o ticket médio por cliente/pedido?",
-      key: "averageTicket",
+      key: "Qual o ticket médio por cliente/pedido?",
       type: "text",
     },
     {
       question: "Trabalham com delivery?",
-      key: "deliveryService",
+      key: "deliverySTrabalham com delivery?",
       type: "select",
       options: [
         { label: "Não trabalhamos", value: "Não trabalhamos" },
@@ -275,12 +275,12 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Como lidam com sazonalidade (dias/horários de pico)?",
-      key: "peakHoursStrategy",
+      key: "Como lidam com sazonalidade (dias/horários de pico)?",
       type: "text",
     },
     {
       question: "Têm estratégia de fidelização de clientes?",
-      key: "loyaltyStrategy",
+      key: "Têm estratégia de fidelização de clientes?",
       type: "select",
       options: [
         { label: "Não temos", value: "Não temos" },
@@ -298,12 +298,12 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     {
       question:
         "Quais cursos ou programas têm mais procura ou são mais lucrativos?",
-      key: "mostProfitableCourses",
+      key: "Quais cursos ou programas têm mais procura ou são mais lucrativos?",
       type: "text",
     },
     {
       question: "Vocês costumam oferecer serviços ou pacotes complementares?",
-      key: "complementaryServices",
+      key: "Vocês costumam oferecer serviços ou pacotes complementares?",
       type: "select",
       options: [
         {
@@ -323,7 +323,7 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "A instituição é:",
-      key: "institutionType",
+      key: "A instituição é:",
       type: "select",
       options: [
         { label: "Presencial", value: "Presencial" },
@@ -333,22 +333,22 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
     },
     {
       question: "Qual o ticket médio por aluno?",
-      key: "averageStudentTicket",
+      key: "Qual o ticket médio por aluno?",
       type: "text",
     },
     {
       question: "Quantos alunos estão ativos atualmente?",
-      key: "activeStudents",
+      key: "Quantos alunos estão ativos atualmente?",
       type: "text",
     },
     {
       question: "Como vocês atraem novos alunos hoje?",
-      key: "studentAcquisition",
+      key: "Como vocês atraem novos alunos hoje?",
       type: "text",
     },
     {
       question: "Como lidam com evasão?",
-      key: "dropoutStrategy",
+      key: "Como lidam com evasão?",
       type: "select",
       options: [
         {
@@ -370,32 +370,32 @@ export const sectorQuestions: Record<BusinessSector, SectorQuestion[]> = {
   [BusinessSector.OTHER]: [
     {
       question: "Quais são os principais produtos ou serviços oferecidos?",
-      key: "mainProducts",
+      key: "Quais são os principais produtos ou serviços oferecidos?",
       type: "text",
     },
     {
       question: "Como funciona o modelo de negócio?",
-      key: "businessModel",
+      key: "Como funciona o modelo de negócio?",
       type: "text",
     },
     {
       question: "Quem é o cliente ideal?",
-      key: "idealCustomer",
+      key: "Quem é o cliente ideal?",
       type: "text",
     },
     {
       question: "Como vocês adquirem novos clientes?",
-      key: "customerAcquisition",
+      key: "Como vocês adquirem novos clientes?",
       type: "text",
     },
     {
       question: "Quais são os maiores desafios do negócio atualmente?",
-      key: "mainChallenges",
+      key: "Quais são os maiores desafios do negócio atualmente?",
       type: "text",
     },
     {
       question: "Quais são as principais metas para os próximos 12 meses?",
-      key: "nextYearGoals",
+      key: "Quais são as principais metas para os próximos 12 meses?",
       type: "text",
     },
   ],

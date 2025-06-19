@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, MoreVertical, Trash2 } from "lucide-react";
+import { CalendarIcon, Eye, MoreVertical, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -32,19 +31,25 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { deleteProjectPlan } from "../actions/plan.action";
+import { cn } from "@/lib/utils";
+import { useAIProcessing } from "@/contexts/ai-processing-context";
 
 interface ProjectCardProps {
   project: {
     id: string;
     title: string;
     description: string | null;
-    sector: string;
     createdAt: Date;
+    sector: string;
   };
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const router = useRouter();
+  const { isProcessing, processingProjectId } = useAIProcessing();
+
+  const isProjectProcessing =
+    isProcessing && processingProjectId === project.id;
 
   const handleDelete = async () => {
     try {
@@ -62,78 +67,101 @@ export function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <Card className="group relative">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-        <div className="space-y-1">
-          <CardTitle className="text-xl">
-            <Link
-              href={`/project-plans/${project.id}`}
-              className="hover:underline"
-            >
-              {project.title}
-            </Link>
-          </CardTitle>
-          <Badge variant="secondary" className="capitalize">
-            {project.sector.toLowerCase()}
-          </Badge>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <Link href={`/project-plans/${project.id}`}>
-              <DropdownMenuItem variant="default" className="">
-                <Eye className="mr-2 h-4 w-4" />
-                Visualizar
-              </DropdownMenuItem>
-            </Link>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <DropdownMenuItem
-                  variant="destructive"
-                  className="text-destructive"
-                  onSelect={(e) => e.preventDefault()}
+    <Link href={`/project-plans/${project.id}`}>
+      <Card
+        className={cn(
+          "group hover:border-primary relative overflow-hidden transition-all duration-200 hover:shadow-md",
+          isProjectProcessing ? "opacity-50" : ""
+        )}
+      >
+        {isProjectProcessing && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
+            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+            <p className="mt-2 text-sm font-medium text-purple-600">
+              IA está processando seu planejamento...
+            </p>
+          </div>
+        )}
+        <CardHeader className="space-y-4 pb-4">
+          <div className="flex items-start justify-between">
+            <div className="space-y-2">
+              <CardTitle className="text-xl font-semibold">
+                {project.title}
+              </CardTitle>
+              <Badge
+                variant="secondary"
+                className="text-primary bg-purple-100 capitalize hover:bg-purple-200"
+              >
+                {project.sector.toLowerCase()}
+              </Badge>
+            </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                  disabled={isProjectProcessing}
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your project plan and all associated data.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDelete}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardHeader>
-      <CardContent>
-        <CardDescription className="line-clamp-2">
-          {project.description}
-        </CardDescription>
-      </CardContent>
-      <CardFooter className="px-6">
-        <p className="text-muted-foreground text-sm">
-          Created {new Date(project.createdAt).toLocaleDateString()}
-        </p>
-      </CardFooter>
-    </Card>
+                  <MoreVertical className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <Link href={`/project-plans/${project.id}`}>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Eye className="mr-2 h-4 w-4" />
+                    Visualizar
+                  </DropdownMenuItem>
+                </Link>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem
+                      className="text-destructive cursor-pointer"
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your project plan and all associated data.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <CardDescription className="line-clamp-2 text-sm text-gray-600">
+            {project.description}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="pt-0">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <CalendarIcon className="h-4 w-4" />
+            <time dateTime={project.createdAt.toISOString()}>
+              {new Date(project.createdAt).toLocaleDateString()}
+            </time>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

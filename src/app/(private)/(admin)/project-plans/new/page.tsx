@@ -19,10 +19,8 @@ export default async function NewProjectPlanPage() {
   }
 
   return (
-    <div className="container py-10">
-      <div className="m-auto flex h-max max-w-3xl items-center justify-center">
-        <NewProjectPlanForm userId={session.user.id} />
-      </div>
+    <div className="m-auto flex min-h-[calc(100vh-5rem)] items-center justify-center p-8">
+      <NewProjectPlanForm userId={session.user.id} />
     </div>
   );
 }

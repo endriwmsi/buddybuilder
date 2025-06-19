@@ -77,7 +77,6 @@ export function DashboardContent({
     }).format(value);
   };
 
-  // Early return if stats is not loaded yet
   if (!stats) {
     return null;
   }

@@ -3,8 +3,8 @@ import { DashboardContent } from "./components/dashboard-content";
 import { DashboardSkeleton } from "./components/dashboard-skeleton";
 import { getDashboardStats } from "./actions/dashboard.action";
 
-export default async function DashboardPage() {
-  const stats = await getDashboardStats();
+export default function DashboardPage() {
+  const statsPromise = getDashboardStats();
 
   return (
     <div className="flex-1 space-y-6 p-6 md:p-8">
@@ -20,8 +20,8 @@ export default async function DashboardPage() {
 
       <Suspense fallback={<DashboardSkeleton />}>
         <DashboardContent
-          statsPromise={Promise.resolve(stats)}
-          projectsPromise={Promise.resolve(stats.recentProjects)}
+          statsPromise={statsPromise}
+          projectsPromise={Promise.resolve([])}
           sprintsPromise={Promise.resolve([])}
           revenueDataPromise={Promise.resolve([])}
           salesFunnelDataPromise={Promise.resolve([])}

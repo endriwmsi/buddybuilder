@@ -44,6 +44,7 @@ import {
   type ProjectPlanFormData,
 } from "../actions/schemas";
 import { createProjectPlan } from "../actions/plan.action";
+import { useAIProcessing } from "@/contexts/ai-processing-context";
 
 interface NewProjectPlanFormProps {
   userId: string;
@@ -60,6 +61,7 @@ const sectorNames: Record<BusinessSector, string> = {
 
 export function NewProjectPlanForm({ userId }: NewProjectPlanFormProps) {
   const router = useRouter();
+  const { startProcessing, stopProcessing } = useAIProcessing();
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(25);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,9 +86,10 @@ export function NewProjectPlanForm({ userId }: NewProjectPlanFormProps) {
 
   async function onSubmit(data: ProjectPlanFormData) {
     setIsSubmitting(true);
+    startProcessing("new-project");
 
     try {
-      const result = await createProjectPlan({
+      const processedData = {
         ...data,
         sectorDetails: Object.fromEntries(
           Object.entries(data.sectorDetails || {}).map(([key, value]) => [
@@ -99,7 +102,9 @@ export function NewProjectPlanForm({ userId }: NewProjectPlanFormProps) {
         marketingGoal: data.marketingGoal,
         commercialGoal: data.commercialGoal,
         userId,
-      });
+      };
+
+      const result = await createProjectPlan(processedData);
 
       if (!result.success || !result.data) {
         throw new Error(
@@ -108,9 +113,12 @@ export function NewProjectPlanForm({ userId }: NewProjectPlanFormProps) {
         );
       }
 
+      startProcessing(result.data.id);
+
       toast.success("Plano do projeto criado com sucesso!");
       router.push(`/project-plans/${result.data.id}`);
     } catch (error) {
+      stopProcessing();
       console.error("Erro ao criar plano do projeto:", error);
       toast.error(
         error instanceof Error
@@ -118,6 +126,7 @@ export function NewProjectPlanForm({ userId }: NewProjectPlanFormProps) {
           : "Não foi possível criar o plano do projeto. Por favor, tente novamente"
       );
     } finally {
+      stopProcessing();
       setIsSubmitting(false);
     }
   }

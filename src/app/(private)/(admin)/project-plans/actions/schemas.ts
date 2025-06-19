@@ -2,8 +2,8 @@ import * as z from "zod";
 import { BusinessSector } from "@/generated/prisma";
 
 export const projectPlanFormSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
+  title: z.string().min(10, "O Título é obrigatório."),
+  description: z.string().min(10, "A descrição é obrigatória."),
   sector: z.nativeEnum(BusinessSector),
   sectorDetails: z.record(
     z.string(),

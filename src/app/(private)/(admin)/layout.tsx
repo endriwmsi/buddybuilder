@@ -10,6 +10,8 @@ import { redirect } from "next/navigation";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Separator } from "@/components/ui/separator";
 import NavActions from "@/components/dashboard/components/nav-actions";
+import { AIProcessingProvider } from "@/contexts/ai-processing-context";
+import { AIStatusBadge } from "@/components/ai-status-badge";
 
 export default async function Layout({
   children,
@@ -31,25 +33,29 @@ export default async function Layout({
 
   return (
     <AuthProvider user={user}>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          {/* <InsetHeader /> */}
-          <header className="flex h-14 shrink-0 items-center gap-2">
-            <div className="flex flex-1 items-center gap-2 px-3">
-              <SidebarTrigger />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
-            </div>
-            <div className="ml-auto px-3">
-              <NavActions />
-            </div>
-          </header>
-          <div className="w-full px-4 sm:px-8">{children}</div>
-        </SidebarInset>
-      </SidebarProvider>
+      <AIProcessingProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            {/* <InsetHeader /> */}
+            <header className="flex h-14 shrink-0 items-center gap-2">
+              <div className="flex flex-1 items-center gap-2 px-3">
+                <SidebarTrigger />
+                <Separator
+                  orientation="vertical"
+                  className="mr-2 data-[orientation=vertical]:h-4"
+                />
+              </div>
+
+              <div className="ml-auto flex items-center gap-2 px-3">
+                <AIStatusBadge />
+                <NavActions />
+              </div>
+            </header>
+            <div className="w-full px-4 sm:px-8">{children}</div>
+          </SidebarInset>
+        </SidebarProvider>
+      </AIProcessingProvider>
     </AuthProvider>
   );
 }
