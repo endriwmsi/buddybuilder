@@ -1,6 +1,6 @@
-import { ProjectCardSkeleton } from "./components/project-card-skeleton";
+import { TasksSkeleton } from "./components/tasks-skeleton";
 
-const ProjectPlansLoading = () => {
+const TasksLoader = () => {
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 space-y-2">
@@ -10,11 +10,11 @@ const ProjectPlansLoading = () => {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 3 }).map((_, index) => (
-          <ProjectCardSkeleton key={index} />
+          <TasksSkeleton key={index} />
         ))}
       </div>
     </div>
   );
 };
 
-export default ProjectPlansLoading;
+export default TasksLoader;

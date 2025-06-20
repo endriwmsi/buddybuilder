@@ -13,9 +13,7 @@ export const metadata: Metadata = {
   description: "View and manage your project plan",
 };
 
-export default async function ProjectPlanPage({
-  params,
-}: ProjectPlanPageProps) {
+const ProjectPlanPage = async ({ params }: ProjectPlanPageProps) => {
   const { id } = await params;
   const projectPlan = await getProjectPlan(id);
 
@@ -24,4 +22,6 @@ export default async function ProjectPlanPage({
       <ProjectPlanDetail projectPlan={projectPlan} />
     </div>
   );
-}
+};
+
+export default ProjectPlanPage;

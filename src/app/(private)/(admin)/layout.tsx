@@ -13,11 +13,7 @@ import NavActions from "@/components/dashboard/components/nav-actions";
 import { AIProcessingProvider } from "@/contexts/ai-processing-context";
 import { AIStatusBadge } from "@/components/ai-status-badge";
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const Layout = async ({ children }: { children: React.ReactNode }) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -52,10 +48,14 @@ export default async function Layout({
                 <NavActions />
               </div>
             </header>
-            <div className="w-full px-4 sm:px-8">{children}</div>
+            <div className="flex w-full flex-1 flex-col gap-4 p-4 sm:px-8">
+              {children}
+            </div>
           </SidebarInset>
         </SidebarProvider>
       </AIProcessingProvider>
     </AuthProvider>
   );
-}
+};
+
+export default Layout;

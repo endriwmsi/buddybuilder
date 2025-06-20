@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { Plus, List, Kanban } from "lucide-react";
 import { toast } from "sonner";
@@ -19,12 +19,16 @@ import { Task, TaskColumn } from "@/generated/prisma";
 import TasksColumn from "./tasks-column";
 import { Icons } from "@/components/icons";
 
-export default function TasksBoard() {
+const TasksBoard = () => {
   const { user } = useAuth();
+
+  // State management
   const [taskColumns, setTaskColumns] = useState<TaskColumn[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateColumnOpen, setIsCreateColumnOpen] = useState(false);
+
+  // View mode with localStorage persistence
   const [viewMode, setViewMode] = useState<"kanban" | "list">(() => {
     if (typeof window !== "undefined") {
       const savedViewMode = localStorage.getItem("tasks-view-mode");
@@ -33,53 +37,74 @@ export default function TasksBoard() {
     return "kanban";
   });
 
+  // Persist view mode changes
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("tasks-view-mode", viewMode);
     }
   }, [viewMode]);
 
-  useEffect(() => {
-    const loadKanbanData = async () => {
-      try {
-        setIsLoading(true);
-        const columnsData = await getColumns(user.id);
-        const tasksData = await getTasks(user.id);
+  // Load tasks data
+  const loadData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [columnsData, tasksData] = await Promise.all([
+        getColumns(user.id),
+        getTasks(user.id),
+      ]);
 
-        setTaskColumns(columnsData);
-        setTasks(tasksData);
-      } catch (error) {
-        console.error("Failed to load kanban data:", error);
-        toast.error(
-          "Falha ao carregar dados do kanban. Por favor, tente novamente."
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadKanbanData();
+      setTaskColumns(columnsData);
+      setTasks(tasksData);
+    } catch (error) {
+      console.error("Failed to load tasks data:", error);
+      toast.error(
+        "Falha ao carregar dados das tarefas. Por favor, tente novamente."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }, [user.id]);
 
-  const handleDragEnd = async (result: any) => {
-    const { destination, source, draggableId, type } = result;
+  // Refresh data
+  const refreshData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [columnsData, tasksData] = await Promise.all([
+        getColumns(user.id),
+        getTasks(user.id),
+      ]);
 
-    if (
-      !destination ||
-      (destination.droppableId === source.droppableId &&
-        destination.index === source.index)
-    ) {
-      return;
+      setTaskColumns(columnsData);
+      setTasks(tasksData);
+    } catch (error) {
+      console.error("Failed to refresh tasks data:", error);
+      toast.error(
+        "Falha ao atualizar dados das tarefas. Por favor, tente novamente."
+      );
+    } finally {
+      setIsLoading(false);
     }
+  }, [user.id]);
 
-    if (type === "column") {
+  // Load data on mount
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Drag and drop handlers
+  const handleColumnReorder = useCallback(
+    async (
+      draggableId: string,
+      sourceIndex: number,
+      destinationIndex: number
+    ) => {
       const newColumns = [...taskColumns];
       const movedColumn = newColumns.find((col) => col.id === draggableId);
 
       if (!movedColumn) return;
 
-      newColumns.splice(source.index, 1);
-      newColumns.splice(destination.index, 0, movedColumn);
+      newColumns.splice(sourceIndex, 1);
+      newColumns.splice(destinationIndex, 0, movedColumn);
 
       const updatedColumns = newColumns.map((col, index) => ({
         ...col,
@@ -89,55 +114,43 @@ export default function TasksBoard() {
       setTaskColumns(updatedColumns);
 
       try {
-        await reorderColumn(draggableId, destination.index);
+        await reorderColumn(draggableId, destinationIndex);
       } catch (error) {
         toast.error("Falha ao reordenar colunas. Por favor, tente novamente.");
         setTaskColumns(taskColumns);
       }
+    },
+    [taskColumns]
+  );
 
-      return;
-    }
-
-    const sourceColumn = taskColumns.find(
-      (col) => col.id === source.droppableId
-    );
-    const destinationColumn = taskColumns.find(
-      (col) => col.id === destination.droppableId
-    );
-
-    if (!sourceColumn || !destinationColumn) return;
-
-    if (source.droppableId === destination.droppableId) {
-      const columnTasks = tasks.filter(
-        (task) => task.taskColumnId === sourceColumn.id
+  const handleTaskMove = useCallback(
+    async (
+      draggableId: string,
+      source: { droppableId: string; index: number },
+      destination: { droppableId: string; index: number }
+    ) => {
+      const sourceColumn = taskColumns.find(
+        (col) => col.id === source.droppableId
       );
-      const movedTask = columnTasks.find((task) => task.id === draggableId);
+      const destinationColumn = taskColumns.find(
+        (col) => col.id === destination.droppableId
+      );
 
-      if (!movedTask) return;
+      if (!sourceColumn || !destinationColumn) return;
 
       const newTasks = [...tasks];
       const taskIndex = newTasks.findIndex((task) => task.id === draggableId);
 
-      if (taskIndex !== -1) {
+      if (taskIndex === -1) return;
+
+      if (source.droppableId === destination.droppableId) {
+        // Same column reorder
         newTasks[taskIndex] = {
           ...newTasks[taskIndex],
           order: destination.index,
         };
-      }
-
-      setTasks(newTasks);
-
-      try {
-        await moveTask(draggableId, destination.droppableId, destination.index);
-      } catch (error) {
-        toast.error("Falha ao reordenar tarefas. Por favor, tente novamente.");
-        setTasks(tasks);
-      }
-    } else {
-      const newTasks = [...tasks];
-      const taskIndex = newTasks.findIndex((task) => task.id === draggableId);
-
-      if (taskIndex !== -1) {
+      } else {
+        // Move between columns
         newTasks[taskIndex] = {
           ...newTasks[taskIndex],
           taskColumnId: destination.droppableId,
@@ -150,30 +163,40 @@ export default function TasksBoard() {
       try {
         await moveTask(draggableId, destination.droppableId, destination.index);
       } catch (error) {
-        toast.error("Falha ao mover tarefa. Por favor, tente novamente.");
+        const errorMessage =
+          source.droppableId === destination.droppableId
+            ? "Falha ao reordenar tarefas. Por favor, tente novamente."
+            : "Falha ao mover tarefa. Por favor, tente novamente.";
+        toast.error(errorMessage);
         setTasks(tasks);
       }
-    }
-  };
+    },
+    [taskColumns, tasks]
+  );
 
-  const refreshData = async () => {
-    try {
-      setIsLoading(true);
-      const columnsData = await getColumns(user.id);
-      const tasksData = await getTasks(user.id);
+  const handleDragEnd = useCallback(
+    async (result: any) => {
+      const { destination, source, draggableId, type } = result;
 
-      setTaskColumns(columnsData);
-      setTasks(tasksData);
-    } catch (error) {
-      console.error("Failed to refresh kanban data:", error);
-      toast.error(
-        "Falha ao atualizar dados do kanban. Por favor, tente novamente."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      if (
+        !destination ||
+        (destination.droppableId === source.droppableId &&
+          destination.index === source.index)
+      ) {
+        return;
+      }
 
+      if (type === "column") {
+        await handleColumnReorder(draggableId, source.index, destination.index);
+        return;
+      }
+
+      await handleTaskMove(draggableId, source, destination);
+    },
+    [handleColumnReorder, handleTaskMove]
+  );
+
+  // Loading state
   if (isLoading) {
     return (
       <div className="flex h-[calc(100vh-15rem)] w-full items-center justify-center">
@@ -186,63 +209,70 @@ export default function TasksBoard() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-end gap-4">
-        <Tabs
-          value={viewMode}
-          onValueChange={(value) => setViewMode(value as "kanban" | "list")}
-        >
-          <TabsList className="grid grid-cols-2">
-            <TabsTrigger value="kanban">
-              <Kanban className="mr-2 h-4 w-4" />
-            </TabsTrigger>
-            <TabsTrigger value="list">
-              <List className="mr-2 h-4 w-4" />
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Button onClick={() => setIsCreateColumnOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Adicionar Coluna
-        </Button>
+    <div>
+      {/* Header */}
+      <div className="mb-10 flex items-end justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Suas tarefas</h1>
+          <p className="text-muted-foreground">
+            Crie e acompanhe suas tarefas de forma organizada e eficiente.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-end gap-4">
+          <Tabs
+            value={viewMode}
+            onValueChange={(value) => setViewMode(value as "kanban" | "list")}
+          >
+            <TabsList className="grid grid-cols-2">
+              <TabsTrigger value="kanban">
+                <Kanban className="mr-2 h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="list">
+                <List className="mr-2 h-4 w-4" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Button onClick={() => setIsCreateColumnOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Adicionar Coluna
+          </Button>
+        </div>
       </div>
 
-      <div className="max-w-[1530px] overflow-x-hidden">
+      {/* Content */}
+      <div className="max-w-[1535px] overflow-x-hidden">
         {viewMode === "kanban" ? (
-          <div>
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable
-                droppableId="all-columns"
-                direction="horizontal"
-                type="column"
-              >
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="flex gap-4 overflow-x-auto pb-4"
-                  >
-                    {taskColumns
-                      .sort((a, b) => a.order - b.order)
-                      .map((taskColum, index) => (
-                        <TasksColumn
-                          key={taskColum.id}
-                          taskColumn={taskColum}
-                          tasks={tasks
-                            .filter(
-                              (task) => task.taskColumnId === taskColum.id
-                            )
-                            .sort((a, b) => a.order - b.order)}
-                          index={index}
-                          refreshData={refreshData}
-                        />
-                      ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable
+              droppableId="all-columns"
+              direction="horizontal"
+              type="column"
+            >
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="flex gap-4 overflow-x-auto pb-4"
+                >
+                  {taskColumns
+                    .sort((a, b) => a.order - b.order)
+                    .map((taskColumn, index) => (
+                      <TasksColumn
+                        key={taskColumn.id}
+                        taskColumn={taskColumn}
+                        tasks={tasks
+                          .filter((task) => task.taskColumnId === taskColumn.id)
+                          .sort((a, b) => a.order - b.order)}
+                        index={index}
+                        refreshData={refreshData}
+                      />
+                    ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         ) : (
           <TasksTable
             tasks={tasks}
@@ -252,6 +282,7 @@ export default function TasksBoard() {
         )}
       </div>
 
+      {/* Dialog */}
       <CreateColumnDialog
         open={isCreateColumnOpen}
         onOpenChange={setIsCreateColumnOpen}
@@ -260,4 +291,6 @@ export default function TasksBoard() {
       />
     </div>
   );
-}
+};
+
+export default TasksBoard;

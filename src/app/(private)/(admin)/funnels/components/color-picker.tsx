@@ -26,7 +26,7 @@ interface ColorPickerProps {
   onChange: (value: string) => void;
 }
 
-export default function ColorPicker({ value, onChange }: ColorPickerProps) {
+const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
   const [open, setOpen] = useState(false);
   const selectedColor = COLORS.find((color) => color.value === value);
 
@@ -67,4 +67,6 @@ export default function ColorPicker({ value, onChange }: ColorPickerProps) {
       </PopoverContent>
     </Popover>
   );
-}
+};
+
+export default ColorPicker;

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "Gerencie seus projetos e planejamentos estratégicos",
 };
 
-export default async function ProjectPlansPage() {
+const ProjectPlansPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -26,7 +26,7 @@ export default async function ProjectPlansPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="mb-8 space-y-4">
+      <div className="mb-10">
         <div className="flex items-end justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Projetos</h1>
@@ -67,4 +67,6 @@ export default async function ProjectPlansPage() {
       )}
     </div>
   );
-}
+};
+
+export default ProjectPlansPage;

@@ -30,6 +30,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { sectorNames } from "@/lib/plan-questions";
 
 interface DashboardStats {
   totalProjects: number;
@@ -93,49 +94,40 @@ export function DashboardContent({
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-end gap-2">
-        {/* <Button variant="outline" size="sm">
-          <Download className="mr-2 h-4 w-4" />
-          Export
-        </Button> */}
-        <Button size="sm" asChild>
-          <Link href="/project-plans/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Novo projeto
-          </Link>
-        </Button>
-      </div>
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Projects
+              Todos seus projetos
             </CardTitle>
             <Layers className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalProjects}</div>
             <p className="text-muted-foreground text-xs">
-              {totalProjects === 0 ? "No projects yet" : "Active projects"}
+              {totalProjects === 0
+                ? "Você não tem nenhum projeto ainda"
+                : "Projetos ativos"}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Todos os leads
+            </CardTitle>
             <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalLeads}</div>
             <p className="text-muted-foreground text-xs">
-              {totalLeads === 0 ? "No leads yet" : "Across all funnels"}
+              {totalLeads === 0 ? "Nenhum lead" : "De todos os funis"}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <CardTitle className="text-sm font-medium">Valor total</CardTitle>
             <CreditCard className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
@@ -143,21 +135,21 @@ export function DashboardContent({
               {formatCurrency(totalValue)}
             </div>
             <p className="text-muted-foreground text-xs">
-              {totalValue === 0 ? "No value yet" : "From all leads"}
+              {totalValue === 0 ? "-" : "De todos os Leads"}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Conversion Rate
+              Taxa de conversão
             </CardTitle>
             <Filter className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{conversionRate}%</div>
             <p className="text-muted-foreground text-xs">
-              {totalLeads === 0 ? "No leads yet" : "Won deals"}
+              {totalLeads === 0 ? "-" : "Conversões"}
             </p>
           </CardContent>
         </Card>
@@ -167,10 +159,8 @@ export function DashboardContent({
         <Card className="col-span-4">
           <CardHeader className="flex flex-row items-center">
             <div className="grid gap-1">
-              <CardTitle>Recent Projects</CardTitle>
-              <CardDescription>
-                Recently created or updated projects
-              </CardDescription>
+              <CardTitle>Projetos recentes</CardTitle>
+              <CardDescription>Projetos mais recentes</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
@@ -208,7 +198,13 @@ export function DashboardContent({
                       </p>
                     </div>
                     <div className="ml-auto flex items-center gap-2">
-                      <Badge variant="outline">{project.sector}</Badge>
+                      <Badge variant="outline">
+                        {
+                          sectorNames[
+                            project.sector as keyof typeof sectorNames
+                          ]
+                        }
+                      </Badge>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -217,7 +213,7 @@ export function DashboardContent({
                             className="h-8 w-8"
                           >
                             <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">More</span>
+                            <span className="sr-only">Mais</span>
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">

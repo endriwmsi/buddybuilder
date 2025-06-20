@@ -3,11 +3,9 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import FunnelCard from "./components/funnel-card";
-import { Suspense } from "react";
-import { DashboardSkeleton } from "../dashboard/components/dashboard-skeleton";
 import FunnelsHeader from "./components/funnels-header";
 
-export default async function FunnelsPage() {
+const FunnelsPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -19,38 +17,28 @@ export default async function FunnelsPage() {
   const funnels = await getFunnels(session.user.id);
 
   return (
-    <div className="flex flex-1 flex-col gap-4 px-4 py-10">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Funis</h1>
-          <p className="text-muted-foreground">
-            Welcome back! Here's an overview of your marketing and sales
-            projects.
+    <div className="container mx-auto py-10">
+      <FunnelsHeader />
+
+      {funnels.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+          <h3 className="text-lg font-semibold">
+            Você ainda não tem nenhum funil
+          </h3>
+          <p className="text-muted-foreground text-sm">
+            Crie seu primeiro funil para começar a gerenciar seus projetos de
+            marketing e vendas.
           </p>
         </div>
-      </div>
-
-      <Suspense fallback={<DashboardSkeleton />}>
-        <FunnelsHeader />
-
-        {funnels.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-            <h3 className="text-lg font-semibold">
-              Você ainda não tem nenhum funil
-            </h3>
-            <p className="text-muted-foreground text-sm">
-              Crie seu primeiro funil para começar a gerenciar seus projetos de
-              marketing e vendas.
-            </p>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {funnels.map((funnel) => (
-              <FunnelCard key={funnel.id} funnel={funnel} />
-            ))}
-          </div>
-        )}
-      </Suspense>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {funnels.map((funnel) => (
+            <FunnelCard key={funnel.id} funnel={funnel} />
+          ))}
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default FunnelsPage;

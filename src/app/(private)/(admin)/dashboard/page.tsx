@@ -1,32 +1,26 @@
-import { Suspense } from "react";
 import { DashboardContent } from "./components/dashboard-content";
-import { DashboardSkeleton } from "./components/dashboard-skeleton";
 import { getDashboardStats } from "./actions/dashboard.action";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const statsPromise = getDashboardStats();
 
   return (
-    <div className="flex-1 space-y-6 p-6 md:p-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back! Here's an overview of your marketing and sales
-            projects.
-          </p>
-        </div>
+    <div className="container mx-auto py-10">
+      <div className="mb-10 flex flex-col">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Bem-vindo de volta! Aqui está uma visão geral dos seus projetos de
+          marketing e vendas.
+        </p>
       </div>
 
-      <Suspense fallback={<DashboardSkeleton />}>
-        <DashboardContent
-          statsPromise={statsPromise}
-          projectsPromise={Promise.resolve([])}
-          sprintsPromise={Promise.resolve([])}
-          revenueDataPromise={Promise.resolve([])}
-          salesFunnelDataPromise={Promise.resolve([])}
-        />
-      </Suspense>
+      <DashboardContent
+        statsPromise={statsPromise}
+        projectsPromise={Promise.resolve([])}
+        sprintsPromise={Promise.resolve([])}
+        revenueDataPromise={Promise.resolve([])}
+        salesFunnelDataPromise={Promise.resolve([])}
+      />
     </div>
   );
 }

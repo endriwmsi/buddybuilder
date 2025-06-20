@@ -14,13 +14,13 @@ export function AIStatusBadge({ status }: AIStatusBadgeProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-sm border px-2 text-sm",
+        "flex items-center gap-2 rounded-sm border px-2 text-xs",
         isProcessing
           ? "border-amber-500 bg-amber-300/60 text-amber-100"
           : "border-green-500 bg-green-500/60 text-green-100"
       )}
     >
-      <span className="font-bold">Status da IA: </span>
+      <span className="font-bold">IA: </span>
       {isProcessing ? (
         <>
           <Loader2 className="h-3 w-3 animate-spin" />

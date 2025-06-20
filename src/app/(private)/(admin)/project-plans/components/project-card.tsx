@@ -1,7 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarIcon, Eye, MoreVertical, Trash2, Loader2 } from "lucide-react";
+import {
+  CalendarIcon,
+  Eye,
+  MoreVertical,
+  Trash2,
+  Loader2,
+  Briefcase,
+  ShoppingCart,
+  GraduationCap,
+  HeartPulse,
+  Utensils,
+  Building2,
+  FolderIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,6 +46,7 @@ import { toast } from "sonner";
 import { deleteProjectPlan } from "../actions/plan.action";
 import { cn } from "@/lib/utils";
 import { useAIProcessing } from "@/contexts/ai-processing-context";
+import { sectorNames } from "@/lib/plan-questions";
 
 interface ProjectCardProps {
   project: {
@@ -43,6 +57,16 @@ interface ProjectCardProps {
     sector: string;
   };
 }
+
+// Mapeamento de ícones para setores
+const sectorIcons = {
+  ECOMMERCE: <ShoppingCart className="text-primary h-5 w-5" />, // E-commerce
+  SAAS: <Briefcase className="text-primary h-5 w-5" />, // SaaS
+  HEALTH: <HeartPulse className="text-primary h-5 w-5" />, // Saúde
+  FOOD: <Utensils className="text-primary h-5 w-5" />, // Alimentação
+  EDUCATION: <GraduationCap className="text-primary h-5 w-5" />, // Educação
+  OTHER: <Building2 className="text-primary h-5 w-5" />, // Outro
+};
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const router = useRouter();
@@ -82,18 +106,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </p>
           </div>
         )}
-        <CardHeader className="space-y-4 pb-4">
+        <CardHeader className="space-y-4">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
-              <CardTitle className="text-xl font-semibold">
+              <CardTitle className="flex items-center gap-3 text-xl font-bold">
+                <div className="bg-muted-foreground/10 flex items-center justify-center rounded p-3">
+                  <FolderIcon className="h-5 w-5" />
+                </div>
                 {project.title}
               </CardTitle>
-              <Badge
-                variant="secondary"
-                className="text-primary bg-purple-100 capitalize hover:bg-purple-200"
-              >
-                {project.sector.toLowerCase()}
-              </Badge>
+              <CardDescription className="line-clamp-2 text-sm text-gray-600">
+                {project.description}
+              </CardDescription>
             </div>
 
             <DropdownMenu>
@@ -147,16 +171,24 @@ export function ProjectCard({ project }: ProjectCardProps) {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
-          <CardDescription className="line-clamp-2 text-sm text-gray-600">
-            {project.description}
-          </CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-0">
+        <CardContent className="flex flex-col space-y-3">
+          <div className="mt-1 flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className="border-green-500 bg-green-500/60 px-2 text-xs font-semibold text-green-100"
+            >
+              {sectorNames[project.sector as keyof typeof sectorNames]}
+            </Badge>
+          </div>
+
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <CalendarIcon className="h-4 w-4" />
-            <time dateTime={project.createdAt.toISOString()}>
+            <time
+              dateTime={project.createdAt.toISOString()}
+              className="font-medium"
+            >
               {new Date(project.createdAt).toLocaleDateString()}
             </time>
           </div>

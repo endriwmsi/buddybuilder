@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { Plus, List, Kanban } from "lucide-react";
 import { toast } from "sonner";
@@ -22,65 +22,88 @@ interface FunnelBoardProps {
   funnelId: string;
 }
 
-export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
+const FunnelBoard = ({ funnelId }: FunnelBoardProps) => {
+  // State management
   const [funnel, setFunnel] = useState<any>(null);
   const [funnelColumns, setFunnelColumns] = useState<FunnelColumn[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateFunnelColumnOpen, setIsCreateFunnelColumnOpen] =
     useState(false);
+
+  // View mode with localStorage persistence
   const [viewMode, setViewMode] = useState<"kanban" | "list">(() => {
     if (typeof window !== "undefined") {
-      const savedViewMode = localStorage.getItem("tasks-view-mode");
+      const savedViewMode = localStorage.getItem("funnel-view-mode");
       return (savedViewMode as "kanban" | "list") || "kanban";
     }
     return "kanban";
   });
 
+  // Persist view mode changes
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("tasks-view-mode", viewMode);
+      localStorage.setItem("funnel-view-mode", viewMode);
     }
   }, [viewMode]);
 
-  useEffect(() => {
-    const loadKanbanData = async () => {
-      try {
-        setIsLoading(true);
-        const [funnelData, funnelColumnsData, leadsData] = await Promise.all([
-          getFunnelById(funnelId),
-          getFunnelColumns(funnelId),
-          getLeads(funnelId),
-        ]);
+  // Load funnel data
+  const loadData = useCallback(async () => {
+    try {
+      setIsLoading(true);
 
-        setFunnel(funnelData);
-        setFunnelColumns(funnelColumnsData);
-        setLeads(leadsData);
-      } catch (error) {
-        console.error("Failed to load kanban data:", error);
-        toast.error(
-          "Falha ao carregar dados do kanban. Por favor, tente novamente."
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      const [funnelData, funnelColumnsData, leadsData] = await Promise.all([
+        getFunnelById(funnelId),
+        getFunnelColumns(funnelId),
+        getLeads(funnelId),
+      ]);
 
-    loadKanbanData();
+      setFunnel(funnelData);
+      setFunnelColumns(funnelColumnsData);
+      setLeads(leadsData);
+    } catch (error) {
+      console.error("Failed to load funnel data:", error);
+      toast.error(
+        "Falha ao carregar dados do funil. Por favor, tente novamente."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }, [funnelId]);
 
-  const handleDragEnd = async (result: any) => {
-    const { destination, source, draggableId, type } = result;
+  // Refresh data
+  const refreshData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [funnelColumnsData, leadsData] = await Promise.all([
+        getFunnelColumns(funnelId),
+        getLeads(funnelId),
+      ]);
 
-    if (
-      !destination ||
-      (destination.droppableId === source.droppableId &&
-        destination.index === source.index)
-    ) {
-      return;
+      setFunnelColumns(funnelColumnsData);
+      setLeads(leadsData);
+    } catch (error) {
+      console.error("Failed to refresh funnel data:", error);
+      toast.error(
+        "Falha ao atualizar dados do funil. Por favor, tente novamente."
+      );
+    } finally {
+      setIsLoading(false);
     }
+  }, [funnelId]);
 
-    if (type === "column") {
+  // Load data on mount
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Drag and drop handlers
+  const handleColumnReorder = useCallback(
+    async (
+      draggableId: string,
+      sourceIndex: number,
+      destinationIndex: number
+    ) => {
       const newFunnelColumns = [...funnelColumns];
       const movedFunnelColumn = newFunnelColumns.find(
         (col) => col.id === draggableId
@@ -88,8 +111,8 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
 
       if (!movedFunnelColumn) return;
 
-      newFunnelColumns.splice(source.index, 1);
-      newFunnelColumns.splice(destination.index, 0, movedFunnelColumn);
+      newFunnelColumns.splice(sourceIndex, 1);
+      newFunnelColumns.splice(destinationIndex, 0, movedFunnelColumn);
 
       const updatedFunnelColumns = newFunnelColumns.map((col, index) => ({
         ...col,
@@ -99,57 +122,43 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
       setFunnelColumns(updatedFunnelColumns);
 
       try {
-        await reorderFunnelColumn(draggableId, destination.index);
+        await reorderFunnelColumn(draggableId, destinationIndex);
       } catch (error) {
         toast.error("Falha ao reordenar colunas. Por favor, tente novamente.");
         setFunnelColumns(funnelColumns);
       }
+    },
+    [funnelColumns]
+  );
 
-      return;
-    }
-
-    const sourceFunnelColumn = funnelColumns.find(
-      (col) => col.id === source.droppableId
-    );
-    const destinationFunnelColumn = funnelColumns.find(
-      (col) => col.id === destination.droppableId
-    );
-
-    if (!sourceFunnelColumn || !destinationFunnelColumn) return;
-
-    if (source.droppableId === destination.droppableId) {
-      const funnelColumnLeads = leads.filter(
-        (lead) => lead.funnelColumnId === sourceFunnelColumn.id
+  const handleLeadMove = useCallback(
+    async (
+      draggableId: string,
+      source: { droppableId: string; index: number },
+      destination: { droppableId: string; index: number }
+    ) => {
+      const sourceFunnelColumn = funnelColumns.find(
+        (col) => col.id === source.droppableId
       );
-      const movedLead = funnelColumnLeads.find(
-        (lead) => lead.id === draggableId
+      const destinationFunnelColumn = funnelColumns.find(
+        (col) => col.id === destination.droppableId
       );
 
-      if (!movedLead) return;
+      if (!sourceFunnelColumn || !destinationFunnelColumn) return;
 
       const newLeads = [...leads];
       const leadIndex = newLeads.findIndex((lead) => lead.id === draggableId);
 
-      if (leadIndex !== -1) {
+      if (leadIndex === -1) return;
+
+      if (source.droppableId === destination.droppableId) {
+        // Same column reorder
         newLeads[leadIndex] = {
           ...newLeads[leadIndex],
           order: destination.index,
         };
-      }
-
-      setLeads(newLeads);
-
-      try {
-        await moveLead(draggableId, destination.droppableId, destination.index);
-      } catch (error) {
-        toast.error("Falha ao reordenar tarefas. Por favor, tente novamente.");
-        setLeads(leads);
-      }
-    } else {
-      const newLeads = [...leads];
-      const leadIndex = newLeads.findIndex((lead) => lead.id === draggableId);
-
-      if (leadIndex !== -1) {
+      } else {
+        // Move between columns
         newLeads[leadIndex] = {
           ...newLeads[leadIndex],
           funnelColumnId: destination.droppableId,
@@ -162,30 +171,40 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
       try {
         await moveLead(draggableId, destination.droppableId, destination.index);
       } catch (error) {
-        toast.error("Falha ao mover lead. Por favor, tente novamente.");
+        const errorMessage =
+          source.droppableId === destination.droppableId
+            ? "Falha ao reordenar leads. Por favor, tente novamente."
+            : "Falha ao mover lead. Por favor, tente novamente.";
+        toast.error(errorMessage);
         setLeads(leads);
       }
-    }
-  };
+    },
+    [funnelColumns, leads]
+  );
 
-  const refreshData = async () => {
-    try {
-      setIsLoading(true);
-      const funnelColumnsData = await getFunnelColumns(funnelId);
-      const leadsData = await getLeads(funnelId);
+  const handleDragEnd = useCallback(
+    async (result: any) => {
+      const { destination, source, draggableId, type } = result;
 
-      setFunnelColumns(funnelColumnsData);
-      setLeads(leadsData);
-    } catch (error) {
-      console.error("Failed to refresh kanban data:", error);
-      toast.error(
-        "Falha ao atualizar dados do kanban. Por favor, tente novamente."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      if (
+        !destination ||
+        (destination.droppableId === source.droppableId &&
+          destination.index === source.index)
+      ) {
+        return;
+      }
 
+      if (type === "column") {
+        await handleColumnReorder(draggableId, source.index, destination.index);
+        return;
+      }
+
+      await handleLeadMove(draggableId, source, destination);
+    },
+    [handleColumnReorder, handleLeadMove]
+  );
+
+  // Loading state
   if (isLoading) {
     return (
       <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center">
@@ -200,11 +219,13 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">
-          {funnel?.name || "Carregando..."}
-        </h1>
+    <div>
+      {/* Header */}
+      <div className="mb-10 flex items-end justify-between gap-4">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-bold">{funnel?.name}</h1>
+          <p className="text-muted-foreground text-sm">{funnel?.description}</p>
+        </div>
         <div className="flex items-center gap-4">
           <Tabs
             value={viewMode}
@@ -226,42 +247,41 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
         </div>
       </div>
 
-      <div className="max-w-[1530px] overflow-x-hidden">
+      {/* Content */}
+      <div className="max-w-[1535px]">
         {viewMode === "kanban" ? (
-          <div>
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable
-                droppableId="all-columns"
-                direction="horizontal"
-                type="column"
-              >
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="flex gap-4 overflow-x-auto pb-4"
-                  >
-                    {funnelColumns
-                      .sort((a, b) => a.order - b.order)
-                      .map((funnelColumn, index) => (
-                        <FunnelColumns
-                          key={funnelColumn.id}
-                          funnelColumn={funnelColumn}
-                          leads={leads
-                            .filter(
-                              (lead) => lead.funnelColumnId === funnelColumn.id
-                            )
-                            .sort((a, b) => a.order - b.order)}
-                          index={index}
-                          refreshData={refreshData}
-                        />
-                      ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable
+              droppableId="all-columns"
+              direction="horizontal"
+              type="column"
+            >
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="flex gap-4 overflow-x-auto pb-4"
+                >
+                  {funnelColumns
+                    .sort((a, b) => a.order - b.order)
+                    .map((funnelColumn, index) => (
+                      <FunnelColumns
+                        key={funnelColumn.id}
+                        funnelColumn={funnelColumn}
+                        leads={leads
+                          .filter(
+                            (lead) => lead.funnelColumnId === funnelColumn.id
+                          )
+                          .sort((a, b) => a.order - b.order)}
+                        index={index}
+                        refreshData={refreshData}
+                      />
+                    ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         ) : (
           <LeadsTable
             leads={leads}
@@ -271,6 +291,7 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
         )}
       </div>
 
+      {/* Dialog */}
       <CreateFunnelColumnDialog
         open={isCreateFunnelColumnOpen}
         onOpenChange={setIsCreateFunnelColumnOpen}
@@ -279,4 +300,6 @@ export default function FunnelBoard({ funnelId }: FunnelBoardProps) {
       />
     </div>
   );
-}
+};
+
+export default FunnelBoard;

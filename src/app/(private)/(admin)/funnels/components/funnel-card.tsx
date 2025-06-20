@@ -34,11 +34,9 @@ export default function FunnelCard({ funnel }: FunnelCardProps) {
         <div className="flex flex-col px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="group-hover:text-primary text-xl font-semibold">
-                {funnel.name}
-              </h2>
+              <h2 className="text-xl font-semibold">{funnel.name}</h2>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
               <UpdateFunnelDialog funnel={funnel} />
               <DeleteFunnelDialog
                 funnelId={funnel.id}
