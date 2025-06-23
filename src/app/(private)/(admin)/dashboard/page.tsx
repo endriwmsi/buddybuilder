@@ -1,8 +1,27 @@
-import { DashboardContent } from "./components/dashboard-content";
 import { getDashboardStats } from "./actions/dashboard.action";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { User } from "@/generated/prisma";
+import db from "@/lib/prisma";
+import UserDashboardContent from "./components/user-dashboard-content";
+import AdminDashboardContent from "./components/admin-dashboard-content";
 
-export default async function DashboardPage() {
+const DashboardPage = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   const statsPromise = getDashboardStats();
+
+  // Se admin, buscar todos os usuários
+  let allUsers: User[] = [];
+
+  if (session?.user.role === "ADMIN") {
+    allUsers = await db.user.findMany({
+      include: { plan: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
 
   return (
     <div className="container mx-auto py-10">
@@ -14,13 +33,19 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <DashboardContent
-        statsPromise={statsPromise}
-        projectsPromise={Promise.resolve([])}
-        sprintsPromise={Promise.resolve([])}
-        revenueDataPromise={Promise.resolve([])}
-        salesFunnelDataPromise={Promise.resolve([])}
-      />
+      {session?.user.role === "ADMIN" ? (
+        <AdminDashboardContent users={allUsers} />
+      ) : (
+        <UserDashboardContent
+          statsPromise={statsPromise}
+          projectsPromise={Promise.resolve([])}
+          sprintsPromise={Promise.resolve([])}
+          revenueDataPromise={Promise.resolve([])}
+          salesFunnelDataPromise={Promise.resolve([])}
+        />
+      )}
     </div>
   );
-}
+};
+
+export default DashboardPage;

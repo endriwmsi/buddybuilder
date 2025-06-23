@@ -58,13 +58,13 @@ interface DashboardContentProps {
   salesFunnelDataPromise: Promise<any[]>;
 }
 
-export function DashboardContent({
+const UserDashboardContent = ({
   statsPromise,
   projectsPromise,
   sprintsPromise,
   revenueDataPromise,
   salesFunnelDataPromise,
-}: DashboardContentProps) {
+}: DashboardContentProps) => {
   const stats = use(statsPromise);
   const projects = use(projectsPromise);
   const sprints = use(sprintsPromise);
@@ -245,4 +245,6 @@ export function DashboardContent({
       </div>
     </>
   );
-}
+};
+
+export default UserDashboardContent;

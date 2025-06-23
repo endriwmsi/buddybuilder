@@ -17,6 +17,7 @@ As ações devem ser:
     marketingGoal: string;
     commercialMaturity: string;
     commercialGoal: string;
+    maxActions: number;
   }) => `Analise os seguintes detalhes do plano de negócios e gere ações estratégicas:
 
 Título: ${params.title}
@@ -28,7 +29,7 @@ Qual seria a meta de marketing mais importante para o seu momento atual?: ${para
 Como você descreveria o nível de maturidade do time comercial?: ${params.commercialMaturity}
 Qual seria a meta comercial mais importante para o seu momento atual?: ${params.commercialGoal}
 
-Por favor, gere até 20 ações estratégicas que ajudarão a melhorar o negócio.
+Por favor, gere exatamente ${params.maxActions} ações estratégicas que ajudarão a melhorar o negócio.
 Cada ação deve ter um título claro, uma descrição detalhada e uma prioridade (LOW, MEDIUM, HIGH).
 A prioridade deve ser definida com base no impacto e urgência da ação.
 

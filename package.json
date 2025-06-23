@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "prisma generate && next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma db seed && next build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset && tsx prisma/seed.ts"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": "prettier --write"

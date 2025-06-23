@@ -49,6 +49,69 @@ export async function createProjectPlan(data: CreateProjectPlanData) {
     redirect("/auth/login");
   }
 
+  // Checagem de limite de projetos do plano do usuário (apenas para usuários não-admin)
+  const userId = session.user.id;
+
+  // Se o usuário for admin, não aplica limites
+  if (session.user.role === "ADMIN") {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL}/api/project-plans`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: (await headers()).get("cookie") || "",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => null);
+        throw new Error(error?.message || "Failed to create project plan");
+      }
+
+      const projectPlan = await response.json();
+      revalidatePath("/project-plans");
+      return { success: true, data: projectPlan };
+    } catch (error) {
+      console.error("Error creating project plan:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to create project plan",
+      };
+    }
+  }
+
+  // Para usuários não-admin, verifica os limites do plano
+  const [
+    {
+      _count: { id: projectCount },
+    },
+    user,
+  ] = await db.$transaction([
+    db.projectPlan.aggregate({
+      _count: { id: true },
+      where: { userId },
+    }),
+    db.user.findUnique({
+      where: { id: userId },
+      select: { plan: { select: { maxProjects: true } } },
+    }),
+  ]);
+  const maxProjects = user?.plan?.maxProjects ?? Infinity;
+
+  if (projectCount >= maxProjects) {
+    return {
+      success: false,
+      error: "Limite de projetos atingido para seu plano.",
+    };
+  }
+
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_APP_URL}/api/project-plans`,

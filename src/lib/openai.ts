@@ -24,7 +24,8 @@ export async function generatePlanActions(
   marketingMaturity: string,
   marketingGoal: string,
   commercialMaturity: string,
-  commercialGoal: string
+  commercialGoal: string,
+  maxActions: number = Infinity
 ): Promise<PlanAction[]> {
   const completion = await openai.chat.completions.create({
     model: "o4-mini",
@@ -44,6 +45,7 @@ export async function generatePlanActions(
           marketingGoal,
           commercialMaturity,
           commercialGoal,
+          maxActions,
         }),
       },
     ],
@@ -51,6 +53,7 @@ export async function generatePlanActions(
   });
 
   const response = completion.choices[0].message.content;
+
   if (!response) {
     throw new Error("Failed to generate plan actions");
   }
@@ -62,7 +65,9 @@ export async function generatePlanActions(
       throw new Error("Invalid response format: missing actions array");
     }
 
-    return parsedResponse.actions.map((action: PlanAction, index: number) => ({
+    const limitedActions = parsedResponse.actions.slice(0, maxActions);
+
+    return limitedActions.map((action: PlanAction, index: number) => ({
       ...action,
       order: index + 1,
       priority: action.priority || "MEDIUM",

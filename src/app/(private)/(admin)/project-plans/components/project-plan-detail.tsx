@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DetailedAction, PlanAction, ProjectPlan } from "@/generated/prisma";
-import { generateDetailedActions as generateDetailedActionsServer } from "../actions/detailed-actions.action";
+import { generateDetailedActions as generateDetailedActionsServer } from "../actions/detailed-plan.action";
 import { toast } from "sonner";
 import { ActionCard } from "./action-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

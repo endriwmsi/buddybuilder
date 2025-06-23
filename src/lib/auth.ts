@@ -79,6 +79,13 @@ export const auth = betterAuth({
       }
     }),
   },
+  user: {
+    additionalFields: {
+      role: {
+        type: ["USER", "ADMIN"],
+      },
+    },
+  },
   session: {
     expiresIn: 60 * 60 * 24, // 1 days
   },

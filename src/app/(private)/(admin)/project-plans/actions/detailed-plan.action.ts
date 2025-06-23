@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import db from "@/lib/prisma";
 
 export async function generateDetailedActions(
   projectPlanId: string,
@@ -15,6 +16,38 @@ export async function generateDetailedActions(
 
   if (!session) {
     redirect("/auth/login");
+  }
+
+  // Checagem de limite de detalhamentos do plano do usuário
+  const userId = session.user.id;
+  // Conta o total de detalhamentos do usuário em todos os projetos
+  const [
+    {
+      _count: { id: detailsCount },
+    },
+    user,
+  ] = await db.$transaction([
+    db.detailedAction.aggregate({
+      _count: { id: true },
+      where: {
+        planAction: {
+          projectPlan: {
+            userId,
+          },
+        },
+      },
+    }),
+    db.user.findUnique({
+      where: { id: userId },
+      select: { plan: { select: { maxDetails: true } } },
+    }),
+  ]);
+  const maxDetails = user?.plan?.maxDetails ?? Infinity;
+  if (detailsCount + actionIds.length > maxDetails) {
+    return {
+      success: false,
+      error: "Limite de detalhamentos atingido para seu plano.",
+    };
   }
 
   try {

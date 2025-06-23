@@ -47,6 +47,17 @@ export async function POST(req: Request) {
       },
     });
 
+    // Verificação de limite de ações (apenas para usuários não-admin)
+    let maxActions = Infinity;
+
+    if (session.user.role === "ADMIN") {
+      const user = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { plan: { select: { maxActions: true } } },
+      });
+      maxActions = user?.plan?.maxActions ?? Infinity;
+    }
+
     // Generate initial plan actions using AI
     const initialActions = await generatePlanActions(
       title,
@@ -56,7 +67,8 @@ export async function POST(req: Request) {
       marketingMaturity,
       marketingGoal,
       commercialMaturity,
-      commercialGoal
+      commercialGoal,
+      maxActions
     );
 
     // Create the plan actions
