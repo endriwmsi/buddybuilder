@@ -42,7 +42,7 @@ export async function POST(
 
     // Generate detailed description using AI
     const completion = await openai.chat.completions.create({
-      model: "o4-mini",
+      model: "gemini-2.0-flash",
       messages: [
         {
           role: "system",

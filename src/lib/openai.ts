@@ -5,8 +5,10 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("Missing OPENAI_API_KEY environment variable");
 }
 
+// Using Gemini instead of OpenAI
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.GOOGLE_AI_API_KEY,
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
 
 export interface PlanAction {
@@ -28,7 +30,7 @@ export async function generatePlanActions(
   maxActions: number = Infinity
 ): Promise<PlanAction[]> {
   const completion = await openai.chat.completions.create({
-    model: "o4-mini",
+    model: "gemini-2.0-flash",
     messages: [
       {
         role: "system",
