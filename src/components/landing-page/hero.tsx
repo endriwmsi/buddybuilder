@@ -152,11 +152,11 @@ export default function Hero() {
                 backgroundSize: "200% 200%",
               }}
             >
-              Vendas com IA
+              Gestão de Projetos com IA
             </motion.span>
             <br />
             <span className="text-gray-900 dark:text-white">
-              Que Realmente Funcionam
+              Que realmente funciona
             </span>
           </motion.h1>
 
