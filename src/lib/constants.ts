@@ -1,6 +1,5 @@
 import {
   IconDashboard,
-  IconUsers,
   IconFolder,
   IconChartFunnelFilled,
   IconListDetails,
@@ -27,11 +26,6 @@ export const navMain = [
     title: "Projetos",
     url: "/project-plans",
     icon: IconFolder,
-  },
-  {
-    title: "Team",
-    url: "#",
-    icon: IconUsers,
   },
 ];
 
