@@ -94,7 +94,7 @@ export default function FinalCTA() {
                 <Sparkles className="h-4 w-4 text-yellow-300 dark:text-yellow-200" />
               </motion.div>
               <span className="text-sm font-medium text-white/90">
-                Limited Time Offer
+                Oferta por Tempo Limitado
               </span>
             </motion.div>
           </motion.div>
@@ -103,16 +103,16 @@ export default function FinalCTA() {
             className="mb-6 text-3xl leading-tight font-bold text-white sm:text-4xl lg:text-6xl"
             variants={itemVariants}
           >
-            Ready to Transform Your Sales Process?
+            Pronto para Transformar Seu Processo de Vendas?
           </motion.h2>
 
           <motion.p
             className="mx-auto mb-12 max-w-3xl text-xl leading-relaxed text-white/90 dark:text-white/95"
             variants={itemVariants}
           >
-            Join thousands of sales teams who have already revolutionized their
-            approach with AI-powered strategies. Start your free trial today and
-            see results within the first week.
+            Junte-se a milhares de equipes de vendas que já revolucionaram sua
+            abordagem com estratégias alimentadas por IA. Comece seu teste
+            gratuito hoje e veja resultados na primeira semana.
           </motion.p>
 
           <motion.div
@@ -124,7 +124,7 @@ export default function FinalCTA() {
                 size="lg"
                 className="rounded-xl bg-white px-8 py-4 text-lg font-semibold text-blue-600 hover:bg-gray-100"
               >
-                Start Free Trial
+                Começar Teste Grátis
                 <motion.div
                   animate={{ x: [0, 5, 0] }}
                   transition={{
@@ -142,7 +142,7 @@ export default function FinalCTA() {
                 variant="outline"
                 className="rounded-xl border-white/30 px-8 py-4 text-lg text-white hover:bg-white/10"
               >
-                Schedule Demo
+                Agendar Demonstração
               </Button>
             </motion.div>
           </motion.div>
@@ -152,9 +152,9 @@ export default function FinalCTA() {
             variants={containerVariants}
           >
             {[
-              { number: "14 Days", label: "Free Trial" },
-              { number: "No Setup", label: "Fees Required" },
-              { number: "24/7", label: "Support Available" },
+              { number: "14 Dias", label: "Teste Grátis" },
+              { number: "Sem Taxas", label: "de Configuração" },
+              { number: "24/7", label: "Suporte Disponível" },
             ].map((item, index) => (
               <motion.div
                 key={item.label}

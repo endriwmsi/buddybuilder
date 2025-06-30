@@ -6,34 +6,34 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    question: "How does the AI-powered playbook generation work?",
+    question: "Como funciona a geração de playbooks alimentada por IA?",
     answer:
-      "Our AI analyzes your industry, target market, and historical sales data to generate customized playbooks with proven strategies, objection handling techniques, and conversation flows tailored to your specific business needs.",
+      "Nossa IA analisa seu setor, mercado-alvo e dados históricos de vendas para gerar playbooks personalizados com estratégias comprovadas, técnicas de tratamento de objeções e fluxos de conversa adaptados às necessidades específicas do seu negócio.",
   },
   {
-    question: "Can I integrate SalesAI Pro with my existing CRM?",
+    question: "Posso integrar o Vector One com meu CRM existente?",
     answer:
-      "Yes! SalesAI Pro integrates with 500+ popular tools including Salesforce, HubSpot, Pipedrive, and many others. We also provide webhooks and APIs for custom integrations.",
+      "Sim! O Vector One se integra com mais de 500 ferramentas populares incluindo Salesforce, HubSpot, Pipedrive e muitas outras. Também fornecemos webhooks e APIs para integrações personalizadas.",
   },
   {
-    question: "What kind of automation workflows can I create?",
+    question: "Que tipo de fluxos de trabalho de automação posso criar?",
     answer:
-      "You can automate lead scoring, email sequences, task assignments, follow-up reminders, data entry, report generation, and much more. Our visual workflow builder makes it easy to create complex automation without coding.",
+      "Você pode automatizar pontuação de leads, sequências de email, atribuição de tarefas, lembretes de acompanhamento, entrada de dados, geração de relatórios e muito mais. Nosso construtor de fluxo de trabalho visual facilita a criação de automações complexas sem codificação.",
   },
   {
-    question: "Is my data secure with SalesAI Pro?",
+    question: "Meus dados estão seguros com o Vector One?",
     answer:
-      "Absolutely. We use enterprise-grade security with SOC 2 compliance, end-to-end encryption, and regular security audits. Your data is stored in secure, geographically distributed data centers.",
+      "Absolutamente. Usamos segurança de nível empresarial com conformidade SOC 2, criptografia de ponta a ponta e auditorias de segurança regulares. Seus dados são armazenados em data centers seguros e geograficamente distribuídos.",
   },
   {
-    question: "How quickly can my team get started?",
+    question: "Com que rapidez minha equipe pode começar?",
     answer:
-      "Most teams are up and running within 24 hours. We provide guided onboarding, data migration assistance, and dedicated support to ensure a smooth transition.",
+      "A maioria das equipes está funcionando em 24 horas. Fornecemos onboarding guiado, assistência na migração de dados e suporte dedicado para garantir uma transição suave.",
   },
   {
-    question: "What support options are available?",
+    question: "Quais opções de suporte estão disponíveis?",
     answer:
-      "We offer email support for all plans, priority support for Professional plans, and dedicated account management for Enterprise customers. We also provide extensive documentation and video tutorials.",
+      "Oferecemos suporte por email para todos os planos, suporte prioritário para planos Profissional e gerenciamento de conta dedicado para clientes Empresariais. Também fornecemos documentação extensa e tutoriais em vídeo.",
   },
 ];
 
@@ -104,16 +104,14 @@ export default function FAQ() {
           animate={isInView ? "visible" : "hidden"}
         >
           <h2 className="mb-6 text-3xl font-bold sm:text-4xl lg:text-5xl">
-            <span className="text-gray-900 dark:text-white">
-              Frequently Asked{" "}
-            </span>
+            <span className="text-gray-900 dark:text-white">Perguntas </span>
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Questions
+              Frequentes
             </span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-300">
-            Everything you need to know about SalesAI Pro. Can't find what
-            you're looking for? Contact our support team.
+            Tudo que você precisa saber sobre o Vector One. Não encontrou o que
+            está procurando? Entre em contato com nossa equipe de suporte.
           </p>
         </motion.div>
 
@@ -161,7 +159,7 @@ export default function FAQ() {
                       animate={{ y: 0 }}
                       transition={{ delay: 0.1 }}
                     >
-                      <p className="leading-relaxed text-gray-600 dark:text-gray-300">
+                      <p className="dark:text-gray-30 mt-4 leading-relaxed text-gray-600">
                         {faq.answer}
                       </p>
                     </motion.div>

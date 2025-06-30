@@ -98,15 +98,16 @@ export default function ProductShowcase() {
           {/* Main Showcase */}
           <motion.div className="mb-16 text-center" variants={centerVariants}>
             <h2 className="mb-6 text-3xl font-bold sm:text-4xl lg:text-5xl">
-              <span className="text-gray-900 dark:text-white">See </span>
+              <span className="text-gray-900 dark:text-white">Veja o </span>
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                SalesAI Pro
+                Vector One
               </span>
-              <span className="text-gray-900 dark:text-white"> in Action</span>
+              <span className="text-gray-900 dark:text-white"> em Ação</span>
             </h2>
             <p className="mx-auto mb-12 max-w-3xl text-xl text-gray-600 dark:text-gray-300">
-              Experience the power of AI-driven sales automation with our
-              intuitive interface designed for modern sales teams.
+              Experimente o poder da automação de vendas alimentada por IA com
+              nossa interface intuitiva projetada para equipes de vendas
+              modernas.
             </p>
           </motion.div>
 
@@ -172,7 +173,7 @@ export default function ProductShowcase() {
                         <Play className="ml-1 h-8 w-8 text-white" />
                       </motion.div>
                       <p className="text-lg text-white/80">
-                        Interactive Product Demo
+                        Demonstração Interativa do Produto
                       </p>
                     </div>
                   </div>
@@ -201,7 +202,7 @@ export default function ProductShowcase() {
                       }}
                     />
                     <span className="text-sm text-gray-600 dark:text-gray-300">
-                      Live Dashboard
+                      Dashboard ao Vivo
                     </span>
                   </div>
                   <div className="space-y-3">
@@ -236,10 +237,10 @@ export default function ProductShowcase() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1.2 }}
                       >
-                        $127K
+                        R$ 127K
                       </motion.div>
                       <div className="text-sm text-gray-600 dark:text-gray-300">
-                        Revenue
+                        Receita
                       </div>
                     </motion.div>
                     <motion.div
@@ -256,7 +257,7 @@ export default function ProductShowcase() {
                         89%
                       </motion.div>
                       <div className="text-sm text-gray-600 dark:text-gray-300">
-                        Conversion
+                        Conversão
                       </div>
                     </motion.div>
                   </div>
@@ -267,18 +268,19 @@ export default function ProductShowcase() {
             {/* Right Side - Content */}
             <motion.div variants={rightVariants}>
               <h3 className="mb-6 text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
-                Real-time Analytics & Insights
+                Analytics e Insights em Tempo Real
               </h3>
               <p className="mb-8 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
-                Get instant visibility into your sales performance with
-                AI-powered analytics that help you make data-driven decisions
-                and optimize your strategies in real-time.
+                Obtenha visibilidade instantânea do desempenho de suas vendas
+                com analytics alimentados por IA que ajudam você a tomar
+                decisões baseadas em dados e otimizar suas estratégias em tempo
+                real.
               </p>
               <div className="mb-8 space-y-4">
                 {[
-                  "Live performance tracking",
-                  "Predictive revenue forecasting",
-                  "Automated reporting",
+                  "Acompanhamento de performance ao vivo",
+                  "Previsão preditiva de receita",
+                  "Relatórios automatizados",
                 ].map((feature, index) => (
                   <motion.div
                     key={feature}
@@ -313,7 +315,7 @@ export default function ProductShowcase() {
                 whileTap={{ scale: 0.95 }}
               >
                 <Button className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                  Explore Features
+                  Explorar Recursos
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </motion.div>

@@ -4,7 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Menu, Zap } from "lucide-react";
 
 export default function Header() {
@@ -47,14 +54,14 @@ export default function Header() {
                 <Zap className="h-5 w-5 text-white" />
               </motion.div>
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-xl font-bold text-transparent">
-                SalesAI Pro
+                Vector One
               </span>
             </Link>
           </motion.div>
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-8 md:flex">
-            {["Features", "Product", "Pricing", "Testimonials"].map(
+            {["Funcionaldiades", "Produto", "Planos", "Testemunhos"].map(
               (item, index) => (
                 <motion.div
                   key={item}
@@ -88,7 +95,7 @@ export default function Header() {
                 variant="ghost"
                 className="rounded-xl text-gray-600 hover:bg-gray-100/50 dark:text-gray-300 dark:hover:bg-gray-800/50"
               >
-                <Link href="/auth/login">Sign In</Link>
+                <Link href="/auth/login">Entrar</Link>
               </Button>
             </motion.div>
             <motion.div
@@ -99,7 +106,7 @@ export default function Header() {
               whileTap={{ scale: 0.95 }}
             >
               <Button className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg hover:from-blue-700 hover:to-purple-700">
-                Start Free Trial
+                <Link href="/auth/login">Começar agora</Link>
               </Button>
             </motion.div>
           </div>
@@ -117,60 +124,48 @@ export default function Header() {
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="w-80 border-gray-200/30 bg-white/95 p-4 backdrop-blur-xl dark:border-gray-800/30 dark:bg-gray-950/95"
+              className="w-80 border-gray-200/30 bg-white/95 px-4 backdrop-blur-xl dark:border-gray-800/30 dark:bg-gray-950/95"
             >
-              <div className="flex h-full flex-col pt-8">
-                {/* Logo in Sheet */}
-                <motion.div
-                  className="mb-8"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <Link
-                    href="/"
-                    className="flex items-center space-x-2"
-                    onClick={handleLinkClick}
-                  >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
-                      <Zap className="h-5 w-5 text-white" />
-                    </div>
-                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-xl font-bold text-transparent">
-                      SalesAI Pro
-                    </span>
-                  </Link>
-                </motion.div>
-
+              <SheetHeader>
+                <SheetTitle>Vector One</SheetTitle>
+                <SheetDescription>
+                  Transforme suas vendas com IA.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="flex h-full flex-col">
                 {/* Navigation Links */}
                 <nav className="flex-1">
                   <div className="space-y-6">
-                    {["Features", "Product", "Pricing", "Testimonials"].map(
-                      (item, index) => (
-                        <motion.div
-                          key={item}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{
-                            delay: 0.2 + index * 0.1,
-                            duration: 0.3,
-                          }}
+                    {[
+                      "Funcionalidades",
+                      "Produtos",
+                      "Planos",
+                      "Testemunhos",
+                    ].map((item, index) => (
+                      <motion.div
+                        key={item}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          delay: 0.2 + index * 0.1,
+                          duration: 0.3,
+                        }}
+                      >
+                        <Link
+                          href={`#${item.toLowerCase()}`}
+                          className="block rounded-lg px-4 py-2 text-lg font-medium text-gray-600 transition-colors hover:bg-gray-100/50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-white"
+                          onClick={handleLinkClick}
                         >
-                          <Link
-                            href={`#${item.toLowerCase()}`}
-                            className="block rounded-lg px-4 py-2 text-lg font-medium text-gray-600 transition-colors hover:bg-gray-100/50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800/50 dark:hover:text-white"
-                            onClick={handleLinkClick}
-                          >
-                            {item}
-                          </Link>
-                        </motion.div>
-                      )
-                    )}
+                          {item}
+                        </Link>
+                      </motion.div>
+                    ))}
                   </div>
                 </nav>
 
                 {/* CTA Buttons */}
                 <motion.div
-                  className="space-y-4 border-t border-gray-200/50 pt-8 dark:border-gray-700/50"
+                  className="mb-8 space-y-4 border-t border-gray-200/50 pt-8 dark:border-gray-700/50"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.3 }}
@@ -180,26 +175,14 @@ export default function Header() {
                     className="w-full rounded-xl border-gray-200 hover:bg-gray-100/50 dark:border-gray-700 dark:hover:bg-gray-800/50"
                     onClick={handleLinkClick}
                   >
-                    Sign In
+                    <Link href="/auth/login">Entrar</Link>
                   </Button>
                   <Button
                     className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg hover:from-blue-700 hover:to-purple-700"
                     onClick={handleLinkClick}
                   >
-                    Start Free Trial
+                    <Link href="/auth/login">Começar agora</Link>
                   </Button>
-                </motion.div>
-
-                {/* Additional Info */}
-                <motion.div
-                  className="mt-8 border-t border-gray-200/50 pt-6 dark:border-gray-700/50"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.8, duration: 0.3 }}
-                >
-                  <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                    Transform your sales with AI
-                  </p>
                 </motion.div>
               </div>
             </SheetContent>

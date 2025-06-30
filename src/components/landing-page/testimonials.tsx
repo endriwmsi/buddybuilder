@@ -7,19 +7,19 @@ import { Star, Quote } from "lucide-react";
 const testimonials = [
   {
     name: "Sarah Chen",
-    role: "VP of Sales",
+    role: "VP de Vendas",
     company: "TechFlow Inc",
     content:
-      "SalesAI Pro transformed our sales process completely. We saw a 40% increase in conversion rates within the first quarter.",
+      "O Vector One transformou completamente nosso processo de vendas. Vimos um aumento de 40% nas taxas de conversão no primeiro trimestre.",
     rating: 5,
     avatar: "/placeholder.svg?height=60&width=60",
   },
   {
     name: "Marcus Rodriguez",
-    role: "Sales Director",
+    role: "Diretor de Vendas",
     company: "Growth Dynamics",
     content:
-      "The AI-powered playbooks are game-changing. Our team now has clear, data-driven strategies for every prospect.",
+      "Os playbooks alimentados por IA são revolucionários. Nossa equipe agora tem estratégias claras e baseadas em dados para cada prospecto.",
     rating: 5,
     avatar: "/placeholder.svg?height=60&width=60",
   },
@@ -28,7 +28,7 @@ const testimonials = [
     role: "CEO",
     company: "StartupX",
     content:
-      "Finally, a platform that actually understands our sales workflow. The automation features saved us 20 hours per week.",
+      "Finalmente, uma plataforma que realmente entende nosso fluxo de trabalho de vendas. Os recursos de automação nos economizaram 20 horas por semana.",
     rating: 5,
     avatar: "/placeholder.svg?height=60&width=60",
   },
@@ -109,15 +109,18 @@ export default function Testimonials() {
           animate={isInView ? "visible" : "hidden"}
         >
           <h2 className="mb-6 text-3xl font-bold sm:text-4xl lg:text-5xl">
-            <span className="text-gray-900 dark:text-white">Loved by </span>
+            <span className="text-gray-900 dark:text-white">Amado por </span>
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Sales Teams
+              Equipes de Vendas
             </span>
-            <span className="text-gray-900 dark:text-white"> Worldwide</span>
+            <span className="text-gray-900 dark:text-white">
+              {" "}
+              no Mundo Todo
+            </span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-300">
-            Join thousands of sales professionals who have transformed their
-            results with SalesAI Pro.
+            Junte-se a milhares de profissionais de vendas que transformaram
+            seus resultados com o Vector One.
           </p>
         </motion.div>
 
@@ -200,7 +203,7 @@ export default function Testimonials() {
                       {testimonial.name}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      {testimonial.role} at {testimonial.company}
+                      {testimonial.role} na {testimonial.company}
                     </div>
                   </div>
                 </motion.div>
@@ -217,9 +220,9 @@ export default function Testimonials() {
           animate={isInView ? "visible" : "hidden"}
         >
           {[
-            { number: "10,000+", label: "Active Users" },
-            { number: "40%", label: "Average Conversion Increase" },
-            { number: "98%", label: "Customer Satisfaction" },
+            { number: "10.000+", label: "Usuários Ativos" },
+            { number: "40%", label: "Aumento Médio na Conversão" },
+            { number: "98%", label: "Satisfação do Cliente" },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}

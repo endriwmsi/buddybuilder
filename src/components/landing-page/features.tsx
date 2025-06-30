@@ -14,39 +14,39 @@ import {
 const features = [
   {
     icon: Brain,
-    title: "AI Strategic Playbooks",
+    title: "Playbooks Estratégicos com IA",
     description:
-      "Generate data-driven sales strategies and playbooks tailored to your industry and target market using advanced AI algorithms.",
+      "Gere estratégias de vendas baseadas em dados e playbooks personalizados para seu setor e mercado-alvo usando algoritmos avançados de IA.",
   },
   {
     icon: Database,
-    title: "Intelligent CRM",
+    title: "CRM Inteligente",
     description:
-      "Build and manage customer relationships with AI-powered insights, automated data entry, and predictive lead scoring.",
+      "Construa e gerencie relacionamentos com clientes com insights alimentados por IA, entrada de dados automatizada e pontuação preditiva de leads.",
   },
   {
     icon: Workflow,
-    title: "Smart Automation",
+    title: "Automação Inteligente",
     description:
-      "Create intelligent workflows that adapt to your sales process, automate repetitive tasks, and trigger actions based on customer behavior.",
+      "Crie fluxos de trabalho inteligentes que se adaptam ao seu processo de vendas, automatize tarefas repetitivas e dispare ações baseadas no comportamento do cliente.",
   },
   {
     icon: TrendingUp,
-    title: "Financial Performance",
+    title: "Performance Financeira",
     description:
-      "Monitor revenue, track KPIs, and get real-time financial insights with customizable dashboards and automated reporting.",
+      "Monitore receita, acompanhe KPIs e obtenha insights financeiros em tempo real com dashboards personalizáveis e relatórios automatizados.",
   },
   {
     icon: Webhook,
-    title: "External Integrations",
+    title: "Integrações Externas",
     description:
-      "Connect with 500+ external services via webhooks, APIs, and native integrations to centralize your sales ecosystem.",
+      "Conecte-se com mais de 500 serviços externos via webhooks, APIs e integrações nativas para centralizar seu ecossistema de vendas.",
   },
   {
     icon: BarChart3,
-    title: "Visual Sales Funnels",
+    title: "Funil de Vendas Visual",
     description:
-      "Visualize your entire sales pipeline with interactive funnels, conversion tracking, and bottleneck identification.",
+      "Visualize todo o seu pipeline de vendas com funis interativos, rastreamento de conversão e identificação de gargalos.",
   },
 ];
 
@@ -114,16 +114,17 @@ export default function Features() {
         >
           <h2 className="mb-6 text-3xl font-bold sm:text-4xl lg:text-5xl">
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Everything You Need
+              Tudo Que Você Precisa
             </span>
             <br />
             <span className="text-gray-900 dark:text-white">
-              To Scale Your Sales
+              Para Escalar Suas Vendas
             </span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-300">
-            Our comprehensive platform combines AI intelligence with practical
-            tools to transform how you approach sales and marketing.
+            Nossa plataforma abrangente combina inteligência de IA com
+            ferramentas práticas para transformar como você aborda vendas e
+            marketing.
           </p>
         </motion.div>
 

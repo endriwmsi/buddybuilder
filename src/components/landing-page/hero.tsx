@@ -152,11 +152,11 @@ export default function Hero() {
                 backgroundSize: "200% 200%",
               }}
             >
-              AI-Powered Sales
+              Vendas com IA
             </motion.span>
             <br />
             <span className="text-gray-900 dark:text-white">
-              That Actually Works
+              Que Realmente Funcionam
             </span>
           </motion.h1>
 
@@ -165,9 +165,9 @@ export default function Hero() {
             className="mx-auto mb-8 max-w-3xl text-xl leading-relaxed text-gray-600 sm:text-2xl dark:text-gray-300"
             variants={itemVariants}
           >
-            Generate strategic playbooks, automate workflows, and visualize your
-            entire sales funnel in one intelligent platform that grows with your
-            business.
+            Gere playbooks estratégicos, automatize fluxos de trabalho e
+            visualize todo o seu funil de vendas em uma plataforma inteligente
+            que cresce com o seu negócio.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -180,7 +180,7 @@ export default function Hero() {
                 size="lg"
                 className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 text-lg shadow-lg hover:from-blue-700 hover:to-purple-700"
               >
-                Start Free Trial
+                Começar Teste Grátis
                 <motion.div
                   animate={{ x: [0, 5, 0] }}
                   transition={{
@@ -199,7 +199,7 @@ export default function Hero() {
                 className="rounded-xl border-2 px-8 py-4 text-lg"
               >
                 <Play className="mr-2 h-5 w-5" />
-                Watch Demo
+                Ver Demonstração
               </Button>
             </motion.div>
           </motion.div>
@@ -217,7 +217,7 @@ export default function Hero() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1, duration: 0.5 }}
               >
-                Trusted by teams at
+                Confiado por equipes da
               </motion.p>
 
               {/* Carousel Container */}

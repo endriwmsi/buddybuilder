@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BuddyBuilder - An AI App that changes everything.",
-  description: "An AI App that changes everything.",
+  title: "Vector One - Uma ferramenta de IA que muda tudo.",
+  description: "Uma ferramenta de IA que muda tudo.",
 };
 
 export default function RootLayout({

@@ -7,46 +7,46 @@ import { Check, Star } from "lucide-react";
 
 const plans = [
   {
-    name: "Starter",
+    name: "Iniciante",
     price: 29,
-    description: "Perfect for small teams getting started",
+    description: "Perfeito para pequenas equipes que estão começando",
     features: [
-      "Up to 5 team members",
-      "Basic CRM functionality",
-      "10 AI-generated playbooks",
-      "Email support",
-      "Basic integrations",
+      "Até 5 membros da equipe",
+      "Funcionalidade básica de CRM",
+      "10 playbooks gerados por IA",
+      "Suporte por email",
+      "Integrações básicas",
     ],
     popular: false,
   },
   {
-    name: "Professional",
+    name: "Profissional",
     price: 79,
-    description: "Ideal for growing sales teams",
+    description: "Ideal para equipes de vendas em crescimento",
     features: [
-      "Up to 25 team members",
-      "Advanced CRM with AI insights",
-      "Unlimited AI playbooks",
-      "Workflow automation",
-      "Priority support",
-      "Advanced integrations",
-      "Custom reporting",
+      "Até 25 membros da equipe",
+      "CRM avançado com insights de IA",
+      "Playbooks de IA ilimitados",
+      "Automação de fluxo de trabalho",
+      "Suporte prioritário",
+      "Integrações avançadas",
+      "Relatórios personalizados",
     ],
     popular: true,
   },
   {
-    name: "Enterprise",
+    name: "Empresarial",
     price: 199,
-    description: "For large organizations with complex needs",
+    description: "Para grandes organizações com necessidades complexas",
     features: [
-      "Unlimited team members",
-      "Full platform access",
-      "Custom AI model training",
-      "Advanced workflow automation",
-      "Dedicated account manager",
-      "Custom integrations",
-      "White-label options",
-      "SLA guarantee",
+      "Membros da equipe ilimitados",
+      "Acesso completo à plataforma",
+      "Treinamento de modelo de IA personalizado",
+      "Automação avançada de fluxo de trabalho",
+      "Gerente de conta dedicado",
+      "Integrações personalizadas",
+      "Opções white-label",
+      "Garantia de SLA",
     ],
     popular: false,
   },
@@ -132,15 +132,14 @@ export default function Pricing() {
           animate={isInView ? "visible" : "hidden"}
         >
           <h2 className="mb-6 text-3xl font-bold sm:text-4xl lg:text-5xl">
-            <span className="text-gray-900 dark:text-white">Simple, </span>
+            <span className="text-gray-900 dark:text-white">Preços </span>
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Transparent
+              Simples e Transparentes
             </span>
-            <span className="text-gray-900 dark:text-white"> Pricing</span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-300">
-            Choose the perfect plan for your team. All plans include a 14-day
-            free trial.
+            Escolha o plano perfeito para sua equipe. Todos os planos incluem um
+            teste gratuito de 14 dias.
           </p>
         </motion.div>
 
@@ -178,7 +177,7 @@ export default function Pricing() {
                   >
                     <div className="flex items-center space-x-1 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white">
                       <Star className="h-4 w-4" />
-                      <span>Most Popular</span>
+                      <span>Mais Popular</span>
                     </div>
                   </motion.div>
                 )}
@@ -212,10 +211,10 @@ export default function Pricing() {
                         stiffness: 200,
                       }}
                     >
-                      ${plan.price}
+                      R$ {plan.price}
                     </motion.span>
                     <span className="ml-2 text-gray-600 dark:text-gray-300">
-                      /month
+                      /mês
                     </span>
                   </div>
                 </div>
@@ -264,7 +263,7 @@ export default function Pricing() {
                     }`}
                     size="lg"
                   >
-                    Start Free Trial
+                    Começar Teste Grátis
                   </Button>
                 </motion.div>
               </motion.div>
@@ -279,11 +278,11 @@ export default function Pricing() {
           transition={{ delay: 1.2, duration: 0.6 }}
         >
           <p className="mb-4 text-gray-600 dark:text-gray-300">
-            Need a custom solution?
+            Precisa de uma solução personalizada?
           </p>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button variant="outline" size="lg" className="rounded-xl">
-              Contact Sales
+              Falar com Vendas
             </Button>
           </motion.div>
         </motion.div>

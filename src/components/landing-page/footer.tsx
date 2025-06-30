@@ -52,7 +52,7 @@ export default function Footer() {
                 >
                   <Zap className="h-5 w-5 text-white" />
                 </motion.div>
-                <span className="text-xl font-bold">SalesAI Pro</span>
+                <span className="text-xl font-bold">Vector One</span>
               </Link>
             </motion.div>
             <motion.p
@@ -62,9 +62,9 @@ export default function Footer() {
               transition={{ delay: 0.3, duration: 0.6 }}
               viewport={{ once: true }}
             >
-              Empowering sales teams worldwide with AI-driven strategies,
-              intelligent automation, and comprehensive analytics to achieve
-              unprecedented growth and success.
+              Capacitando equipes de vendas em todo o mundo com estratégias
+              baseadas em IA, automação inteligente e análises abrangentes para
+              alcançar crescimento e sucesso sem precedentes.
             </motion.p>
             <div className="flex space-x-4">
               {[
@@ -95,9 +95,42 @@ export default function Footer() {
 
           {/* Product Links */}
           <motion.div variants={itemVariants}>
-            <h3 className="mb-4 text-lg font-semibold">Product</h3>
+            <h3 className="mb-4 text-lg font-semibold">Links Úteis</h3>
             <ul className="space-y-3">
-              {["Features", "Pricing", "Integrations", "API Documentation"].map(
+              {[
+                "Funcionalidades",
+                "Planos",
+                "Integrações",
+                "Documentation",
+              ].map((item, index) => (
+                <motion.li
+                  key={item}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
+                  viewport={{ once: true }}
+                >
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Link
+                      href="#"
+                      className="text-gray-300 transition-colors hover:text-white dark:text-gray-400"
+                    >
+                      {item}
+                    </Link>
+                  </motion.div>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Company Links */}
+          <motion.div variants={itemVariants}>
+            <h3 className="mb-4 text-lg font-semibold">Sobre</h3>
+            <ul className="space-y-3">
+              {["Sobre nós", "Oportunidades", "Blog", "Contato"].map(
                 (item, index) => (
                   <motion.li
                     key={item}
@@ -122,34 +155,6 @@ export default function Footer() {
               )}
             </ul>
           </motion.div>
-
-          {/* Company Links */}
-          <motion.div variants={itemVariants}>
-            <h3 className="mb-4 text-lg font-semibold">Company</h3>
-            <ul className="space-y-3">
-              {["About Us", "Careers", "Blog", "Contact"].map((item, index) => (
-                <motion.li
-                  key={item}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
-                  viewport={{ once: true }}
-                >
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Link
-                      href="#"
-                      className="text-gray-300 transition-colors hover:text-white dark:text-gray-400"
-                    >
-                      {item}
-                    </Link>
-                  </motion.div>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
         </motion.div>
 
         {/* Bottom Section */}
@@ -161,28 +166,31 @@ export default function Footer() {
           viewport={{ once: true }}
         >
           <p className="mb-4 text-sm text-gray-400 md:mb-0 dark:text-gray-500">
-            © {new Date().getFullYear()} SalesAI Pro. All rights reserved.
+            © {new Date().getFullYear()} Vector One. Todos os direitos
+            reservados.
           </p>
           <div className="flex space-x-6 text-sm">
-            {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
-              (item, index) => (
-                <motion.div
-                  key={item}
-                  whileHover={{ y: -2 }}
-                  transition={{ duration: 0.2 }}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
+            {[
+              "Política de Privacidade",
+              "Termos de Serviço",
+              "Política de Cookies",
+            ].map((item, index) => (
+              <motion.div
+                key={item}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+              >
+                <Link
+                  href="#"
+                  className="text-gray-400 transition-colors hover:text-white dark:text-gray-500"
                 >
-                  <Link
-                    href="#"
-                    className="text-gray-400 transition-colors hover:text-white dark:text-gray-500"
-                  >
-                    {item}
-                  </Link>
-                </motion.div>
-              )
-            )}
+                  {item}
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>
