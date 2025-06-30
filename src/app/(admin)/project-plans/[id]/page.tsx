@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { ProjectPlanDetail } from "@/app/(private)/(admin)/project-plans/components/project-plan-detail";
-import { getProjectPlan } from "@/app/(private)/(admin)/project-plans/actions/plan.action";
+import { ProjectPlanDetail } from "@/app/(admin)/project-plans/components/project-plan-detail";
+import { getProjectPlan } from "@/app/(admin)/project-plans/actions/plan.action";
 
 interface ProjectPlanPageProps {
   params: Promise<{

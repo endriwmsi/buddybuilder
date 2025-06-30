@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { PRIORITY_CONFIG, TaskPriority } from "@/lib/types";
-import { deleteMultipleTasks } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
+import { deleteMultipleTasks } from "@/app/(admin)/tasks/actions/tasks.action";
 import { Checkbox } from "@/components/ui/checkbox";
 import TaskDetailsDialog from "./dialogs/task-details-dialog";
 import DeleteConfirmDialog from "./dialogs/delete-confirm-dialog";

@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { deleteColumn } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
+import { deleteColumn } from "@/app/(admin)/tasks/actions/tasks.action";
 import CreateTaskDialog from "./dialogs/create-task-dialog";
 import EditColumnDialog from "./dialogs/edit-column-dialog";
 import DeleteConfirmDialog from "./dialogs/delete-confirm-dialog";

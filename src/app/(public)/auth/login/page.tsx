@@ -1,34 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { signIn } from "@/lib/auth-client";
 import { useState } from "react";
-import { toast } from "sonner";
-import { Icons } from "@/components/icons";
-import LoginForm from "@/components/auth/login-form";
+import LoginForm from "@/app/(public)/auth/components/login-form";
 
 const LoginPage = () => {
   const [isPending, setIsPending] = useState(false);
-
-  const handleLoginWithGoogle = async () => {
-    await signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
-      errorCallbackURL: "/auth/login/error",
-      fetchOptions: {
-        onRequest: () => {
-          setIsPending(true);
-        },
-        onResponse: () => {
-          setIsPending(false);
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message);
-        },
-      },
-    });
-  };
 
   return (
     <div className="lg:p-8">
@@ -49,32 +26,6 @@ const LoginPage = () => {
 
         <div className="grid gap-6">
           <LoginForm />
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background text-muted-foreground px-2">
-                Ou continuar com
-              </span>
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            type="button"
-            onClick={handleLoginWithGoogle}
-          >
-            {isPending ? (
-              <span className="flex items-center gap-2">
-                <Icons.spinner className="h-4 w-4 animate-spin" />
-                Google
-              </span>
-            ) : (
-              "Google"
-            )}
-          </Button>
         </div>
       </div>
     </div>

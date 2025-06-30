@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { NewProjectPlanForm } from "@/app/(private)/(admin)/project-plans/components/new-project-plan-form";
+import { NewProjectPlanForm } from "@/app/(admin)/project-plans/components/new-project-plan-form";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 

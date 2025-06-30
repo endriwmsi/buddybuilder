@@ -1,6 +1,6 @@
 "use server";
 
-import { loginSchema } from "@/components/auth/login-form";
+import { loginSchema } from "@/app/(public)/auth/components/login-form";
 import { auth, ErrorCode } from "@/lib/auth";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";

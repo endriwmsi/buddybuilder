@@ -44,7 +44,7 @@ import DeleteConfirmDialog from "./delete-confirm-dialog";
 import {
   updateTask,
   deleteTask,
-} from "@/app/(private)/(admin)/tasks/actions/tasks.action";
+} from "@/app/(admin)/tasks/actions/tasks.action";
 import { PRIORITY_CONFIG } from "@/lib/types";
 import { Task, TaskPriority } from "@/generated/prisma";
 import { ptBR } from "date-fns/locale";

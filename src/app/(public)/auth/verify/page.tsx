@@ -1,4 +1,4 @@
-import SendVerificationEmailForm from "@/components/auth/send-verification-email-form";
+import SendVerificationEmailForm from "@/app/(public)/auth/components/send-verification-email-form";
 import { Icons } from "@/components/icons";
 
 import { redirect } from "next/navigation";

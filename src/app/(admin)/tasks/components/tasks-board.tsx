@@ -11,7 +11,7 @@ import {
   getTasks,
   reorderColumn,
   moveTask,
-} from "@/app/(private)/(admin)/tasks/actions/tasks.action";
+} from "@/app/(admin)/tasks/actions/tasks.action";
 import TasksTable from "./tasks-table";
 import { useAuth } from "@/contexts/auth-context";
 import CreateColumnDialog from "./dialogs/create-column-dialog";

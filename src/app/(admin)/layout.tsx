@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/dashboard/components/app-sidebar";
+import { AppSidebar } from "@/app/(admin)/dashboard/components/app-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Separator } from "@/components/ui/separator";
-import NavActions from "@/components/dashboard/components/nav-actions";
+import NavActions from "@/app/(admin)/dashboard/components/nav-actions";
 import { AIProcessingProvider } from "@/contexts/ai-processing-context";
 import { AIStatusBadge } from "@/components/ai-status-badge";
 

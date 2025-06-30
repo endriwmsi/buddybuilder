@@ -1,8 +1,8 @@
 "use client";
 
-import { NavMain } from "@/components/dashboard/components/nav-main";
-import { NavUser } from "@/components/dashboard/components/nav-user";
-import { TeamSwitcher } from "@/components/dashboard/components/team-switcher";
+import { NavMain } from "@/app/(admin)/dashboard/components/nav-main";
+import { NavUser } from "@/app/(admin)/dashboard/components/nav-user";
+import { TeamSwitcher } from "@/app/(admin)/dashboard/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,

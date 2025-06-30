@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createColumn } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
+import { createColumn } from "@/app/(admin)/tasks/actions/tasks.action";
 import ColorPicker from "../color-picker";
 
 const formSchema = z.object({

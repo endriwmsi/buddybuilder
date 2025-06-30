@@ -1,35 +1,9 @@
 "use client";
 
-import RegisterForm from "@/components/auth/register-form";
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { signIn } from "@/lib/auth-client";
+import RegisterForm from "@/app/(public)/auth/components/register-form";
 import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
 
 const RegisterPage = () => {
-  const [isPending, setIsPending] = useState(false);
-
-  const handleLoginWithGoogle = async () => {
-    await signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
-      errorCallbackURL: "/auth/login/error",
-      fetchOptions: {
-        onRequest: () => {
-          setIsPending(true);
-        },
-        onResponse: () => {
-          setIsPending(false);
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message);
-        },
-      },
-    });
-  };
-
   return (
     <div className="lg:p-8">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -51,37 +25,10 @@ const RegisterPage = () => {
 
         <div className="grid gap-6">
           <RegisterForm />
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background text-muted-foreground px-2">
-                Ou continuar com
-              </span>
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            type="button"
-            onClick={handleLoginWithGoogle}
-            disabled={isPending}
-          >
-            {isPending ? (
-              <span className="flex items-center gap-2">
-                <Icons.spinner className="h-4 w-4 animate-spin" />
-                Google
-              </span>
-            ) : (
-              "Google"
-            )}
-          </Button>
         </div>
 
         <p className="text-muted-foreground px-8 text-center text-sm">
-          Clicando em continuar, você concorda com nossos{" "}
+          Continuando, você concorda com nossos{" "}
           <Link
             href="/terms"
             className="hover:text-primary underline underline-offset-4"

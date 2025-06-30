@@ -39,7 +39,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { createTask } from "@/app/(private)/(admin)/tasks/actions/tasks.action";
+import { createTask } from "@/app/(admin)/tasks/actions/tasks.action";
 import { PRIORITY_CONFIG } from "@/lib/types";
 import { ptBR } from "date-fns/locale";
 

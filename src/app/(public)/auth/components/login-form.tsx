@@ -17,8 +17,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import Link from "next/link";
-import { PasswordInput } from "../ui/password-input";
-import { Icons } from "../icons";
+import { PasswordInput } from "../../../../components/ui/password-input";
+import { Icons } from "../../../../components/icons";
+import { signIn } from "@/lib/auth-client";
 
 export const loginSchema = z.object({
   email: z.string().email("Você deve inserir um e-mail válido."),
@@ -38,6 +39,25 @@ const LoginForm = () => {
       password: "",
     },
   });
+
+  const handleLoginWithGoogle = async () => {
+    await signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+      errorCallbackURL: "/auth/login/error",
+      fetchOptions: {
+        onRequest: () => {
+          setIsPending(true);
+        },
+        onResponse: () => {
+          setIsPending(false);
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
+      },
+    });
+  };
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsPending(true);
@@ -125,6 +145,33 @@ const LoginForm = () => {
           </div>
         </form>
       </Form>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background text-muted-foreground px-2">
+            Ou continuar com
+          </span>
+        </div>
+      </div>
+
+      <Button
+        variant="outline"
+        type="button"
+        onClick={handleLoginWithGoogle}
+        disabled={isPending}
+      >
+        {isPending ? (
+          <span className="flex items-center gap-2">
+            <Icons.spinner className="h-4 w-4 animate-spin" />
+            Google
+          </span>
+        ) : (
+          "Google"
+        )}
+      </Button>
     </>
   );
 };

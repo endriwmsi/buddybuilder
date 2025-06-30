@@ -23,7 +23,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../../../../../components/ui/tooltip";
+} from "../../../../components/ui/tooltip";
 import TaskDetailsDialog from "./dialogs/task-details-dialog";
 import { Task } from "@/generated/prisma";
 
