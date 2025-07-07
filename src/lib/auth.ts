@@ -85,6 +85,10 @@ export const auth = betterAuth({
         type: ["USER", "ADMIN"],
         input: false,
       },
+      planId: {
+        type: "number",
+        input: false,
+      },
     },
   },
   session: {
