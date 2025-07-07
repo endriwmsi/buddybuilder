@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { detailedActionPrompt } from "@/lib/prompts/detailed-action";
 import db from "@/lib/prisma";
 import { NextRequest } from "next/server";
-import { ai } from "@/app/api/ai/route";
+import { ai } from "@/lib/ai";
 
 export async function POST(
   request: NextRequest,
