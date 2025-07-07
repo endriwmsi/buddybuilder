@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { businessPlanPrompt } from "./prompts/business-plan";
+import { businessPlanPrompt } from "@/lib/prompts/business-plan";
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error("Missing OPENAI_API_KEY environment variable");

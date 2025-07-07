@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { BusinessSector } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { generatePlanActions } from "@/lib/openai";
+import { generatePlanActions } from "@/app/api/ai/route";
 import db from "@/lib/prisma";
 
 export async function POST(req: Request) {
@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       commercialMaturity,
       marketingGoal,
       commercialGoal,
+      digitalPresence,
       userId,
     } = body;
 
@@ -43,6 +44,7 @@ export async function POST(req: Request) {
         commercialMaturity,
         marketingGoal,
         commercialGoal,
+        digitalPresence,
         userId,
       },
     });
