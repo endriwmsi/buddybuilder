@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { openai } from "@/lib/openai";
 import { detailedActionPrompt } from "@/lib/prompts/detailed-action";
 import db from "@/lib/prisma";
 import { NextRequest } from "next/server";
+import { ai } from "@/app/api/ai/route";
 
 export async function POST(
   request: NextRequest,
@@ -41,7 +41,7 @@ export async function POST(
     const action = projectPlan.actions[0];
 
     // Generate detailed description using AI
-    const completion = await openai.chat.completions.create({
+    const completion = await ai.chat.completions.create({
       model: "gemini-2.0-flash",
       messages: [
         {

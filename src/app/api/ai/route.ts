@@ -6,7 +6,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 // Using Gemini instead of OpenAI
-export const openai = new OpenAI({
+export const ai = new OpenAI({
   apiKey: process.env.GOOGLE_AI_API_KEY,
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
@@ -29,7 +29,7 @@ export async function generatePlanActions(
   commercialGoal: string,
   maxActions: number = Infinity
 ): Promise<PlanAction[]> {
-  const completion = await openai.chat.completions.create({
+  const completion = await ai.chat.completions.create({
     model: "gemini-2.0-flash",
     messages: [
       {
