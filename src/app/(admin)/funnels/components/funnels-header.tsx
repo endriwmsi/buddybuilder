@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import CreateFunnelDialog from "./dialogs/create-funnel-dialog";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/providers/auth-provider";
 
 const FunnelsHeader = () => {
   const { user } = useAuth();

@@ -5,23 +5,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/providers/auth-provider";
 
 export default function NavActions() {
-  const router = useRouter();
   const { user } = useAuth();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     await signOut({
@@ -66,14 +65,7 @@ export default function NavActions() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Sparkles />
-              Upgrade to Pro
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
+          {/* <DropdownMenuGroup>
             <DropdownMenuItem>
               <BadgeCheck />
               Account
@@ -86,8 +78,8 @@ export default function NavActions() {
               <Bell />
               Notifications
             </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
+          </DropdownMenuGroup> */}
+          {/* <DropdownMenuSeparator /> */}
           <DropdownMenuItem onClick={handleSignOut}>
             <LogOut />
             Log out

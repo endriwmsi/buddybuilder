@@ -13,7 +13,7 @@ import {
   moveTask,
 } from "@/app/(admin)/tasks/actions/tasks.action";
 import TasksTable from "./tasks-table";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/providers/auth-provider";
 import CreateColumnDialog from "./dialogs/create-column-dialog";
 import { Task, TaskColumn } from "@/generated/prisma";
 import TasksColumn from "./tasks-column";

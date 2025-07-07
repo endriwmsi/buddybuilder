@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 
-interface AIProcessingContextType {
+interface IAIStatusContextProps {
   isProcessing: boolean;
   processingProjectId: string | null;
   estimatedTimeRemaining: number;
@@ -10,15 +10,11 @@ interface AIProcessingContextType {
   stopProcessing: () => void;
 }
 
-const AIProcessingContext = createContext<AIProcessingContextType | undefined>(
+const AIProcessingContext = createContext<IAIStatusContextProps | undefined>(
   undefined
 );
 
-export function AIProcessingProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AIStatusProvider({ children }: { children: React.ReactNode }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProjectId, setProcessingProjectId] = useState<string | null>(
     null

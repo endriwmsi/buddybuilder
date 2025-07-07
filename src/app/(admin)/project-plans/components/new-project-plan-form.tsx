@@ -44,7 +44,7 @@ import {
   type ProjectPlanFormData,
 } from "../actions/schemas";
 import { createProjectPlan } from "../actions/plan.action";
-import { useAIProcessing } from "@/contexts/ai-processing-context";
+import { useAIProcessing } from "@/providers/ai-processing-context";
 
 interface NewProjectPlanFormProps {
   userId: string;

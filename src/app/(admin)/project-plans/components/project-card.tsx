@@ -45,7 +45,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { deleteProjectPlan } from "../actions/plan.action";
 import { cn } from "@/lib/utils";
-import { useAIProcessing } from "@/contexts/ai-processing-context";
+import { useAIProcessing } from "@/providers/ai-processing-context";
 import { sectorNames } from "@/lib/plan-questions";
 
 interface ProjectCardProps {
