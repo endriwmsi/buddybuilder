@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { BusinessSector } from "@/generated/prisma";
+import { BusinessSector, ActionPriority } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { generatePlanActions } from "@/app/api/ai/route";
+import { ai } from "@/lib/ai";
+import { businessPlanPrompt } from "@/lib/prompts/business-plan";
 import db from "@/lib/prisma";
 
 export async function POST(req: Request) {
@@ -44,7 +45,6 @@ export async function POST(req: Request) {
         commercialMaturity,
         marketingGoal,
         commercialGoal,
-        digitalPresence,
         userId,
       },
     });
@@ -61,27 +61,66 @@ export async function POST(req: Request) {
     }
 
     // Generate initial plan actions using AI
-    const initialActions = await generatePlanActions(
-      title,
-      description,
-      sector,
-      sectorDetails,
-      marketingMaturity,
-      marketingGoal,
-      commercialMaturity,
-      commercialGoal,
-      maxActions
-    );
+    const completion = await ai.chat.completions.create({
+      model: "gemini-2.0-flash",
+      messages: [
+        {
+          role: "system",
+          content: businessPlanPrompt.system,
+        },
+        {
+          role: "user",
+          content: businessPlanPrompt.user({
+            title,
+            description,
+            sector,
+            sectorDetails,
+            marketingMaturity,
+            marketingGoal,
+            commercialMaturity,
+            commercialGoal,
+            maxActions,
+          }),
+        },
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    const response = completion.choices[0].message.content;
+    if (!response) {
+      throw new Error("Failed to generate plan actions");
+    }
+
+    const parsedResponse = JSON.parse(response);
+    if (!parsedResponse.actions || !Array.isArray(parsedResponse.actions)) {
+      throw new Error("Invalid response format: missing actions array");
+    }
+
+    const limitedActions = parsedResponse.actions.slice(0, maxActions);
+    const initialActions = limitedActions.map((action: any, index: number) => ({
+      ...action,
+      order: index + 1,
+      priority: action.priority || "MEDIUM",
+    }));
 
     // Create the plan actions
     await Promise.all(
-      initialActions.map((action) =>
-        db.planAction.create({
-          data: {
-            ...action,
-            projectPlanId: projectPlan.id,
-          },
-        })
+      initialActions.map(
+        (action: {
+          title: string;
+          description: string;
+          priority: string;
+          order: number;
+        }) =>
+          db.planAction.create({
+            data: {
+              title: action.title,
+              description: action.description,
+              priority: action.priority as ActionPriority,
+              order: action.order,
+              projectPlanId: projectPlan.id,
+            },
+          })
       )
     );
 
