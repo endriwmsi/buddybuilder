@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +33,9 @@ import {
 } from "@/components/ui/table";
 import { FunnelColumn, Lead } from "@/generated/prisma";
 import { Checkbox } from "@/components/ui/checkbox";
+import { deleteMultipleLeads } from "../actions/lead.action";
+import { toast } from "sonner";
+import DeleteConfirmDialog from "../../tasks/components/dialogs/delete-confirm-dialog";
 
 interface LeadsTableProps {
   leads: Lead[];
@@ -49,6 +52,7 @@ export default function LeadsTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const getColumnName = (funnelColumnId: string) => {
     const column = funnelColumns.find((col) => col.id === funnelColumnId);
@@ -162,6 +166,26 @@ export default function LeadsTable({
     },
   });
 
+  const handleDeleteSelected = async () => {
+    try {
+      const selectedRows = table.getFilteredSelectedRowModel().rows;
+      const leadIds = selectedRows.map((row) => row.original.id);
+
+      if (leadIds.length === 0) {
+        toast.error("Nenhum lead selecionado");
+        return;
+      }
+
+      await deleteMultipleLeads(funnelColumns[0]?.funnelId, leadIds);
+      await refreshData();
+      setRowSelection({});
+      toast.success(`${leadIds.length} lead(s) excluído(s) com sucesso`);
+    } catch (error) {
+      console.error("Failed to delete leads:", error);
+      toast.error("Falha ao excluir leads. Por favor, tente novamente.");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -174,9 +198,17 @@ export default function LeadsTable({
             }
             className="max-w-sm"
           />
-          {/* <Button>
-
-          </Button> */}
+          {table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive border-destructive hover:bg-destructive/10 h-8 gap-1"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Excluir ({table.getFilteredSelectedRowModel().rows.length})
+            </Button>
+          )}
         </div>
         <div className="flex items-center space-x-2">
           <DropdownMenu>
@@ -285,6 +317,14 @@ export default function LeadsTable({
           </Button>
         </div>
       </div>
+
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Excluir Leads"
+        description={`Tem certeza que deseja excluir ${table.getFilteredSelectedRowModel().rows.length} lead(s)? Esta ação não pode ser desfeita.`}
+        onConfirm={handleDeleteSelected}
+      />
     </div>
   );
 }

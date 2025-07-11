@@ -293,79 +293,79 @@ export async function moveLead(
   return { success: true };
 }
 
-// export async function deleteMultipleLeads(funnelId: string, leadIds: string[]) {
-//   const session = await auth.api.getSession({
-//     headers: await headers(),
-//   });
+export async function deleteMultipleLeads(funnelId: string, leadIds: string[]) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-//   if (!session) {
-//     redirect("/auth/login");
-//   }
+  if (!session) {
+    redirect("/auth/login");
+  }
 
-//   // Verify task ownership for all tasks
-//   const leads = await db.lead.findMany({
-//     where: {
-//       id: {
-//         in: leadIds,
-//       },
-//     },
-//     include: {
-//       funnelColumn: {
-//         select: {
-//           funnelId: true,
-//         },
-//       },
-//     },
-//   });
+  // Verify lead ownership for all leads
+  const leads = await db.lead.findMany({
+    where: {
+      id: {
+        in: leadIds,
+      },
+    },
+    include: {
+      funnelColumn: {
+        select: {
+          funnelId: true,
+        },
+      },
+    },
+  });
 
-//   // Check if all tasks belong to the current funnel
-//   const unauthorized = leads.some(
-//     (lead) => lead.funnelColumn.id !== session.user.id
-//   );
-//   if (unauthorized) {
-//     throw new Error("Unauthorized");
-//   }
+  // Check if all leads belong to the current funnel
+  const unauthorized = leads.some(
+    (lead) => lead.funnelColumn.funnelId !== funnelId
+  );
+  if (unauthorized) {
+    throw new Error("Unauthorized");
+  }
 
-//   // Group tasks by column for reordering later
-//   const columnTaskMap = tasks.reduce(
-//     (acc, task) => {
-//       if (!acc[task.leadColumnId]) {
-//         acc[task.leadColumnId] = [];
-//       }
-//       acc[task.leadColumnId].push(task.id);
-//       return acc;
-//     },
-//     {} as Record<string, string[]>
-//   );
+  // Group leads by column for reordering later
+  const columnLeadMap = leads.reduce(
+    (acc, lead) => {
+      if (!acc[lead.funnelColumnId]) {
+        acc[lead.funnelColumnId] = [];
+      }
+      acc[lead.funnelColumnId].push(lead.id);
+      return acc;
+    },
+    {} as Record<string, string[]>
+  );
 
-//   // Delete all tasks
-//   await db.lead.deleteMany({
-//     where: {
-//       id: {
-//         in: taskIds,
-//       },
-//     },
-//   });
+  // Delete all leads
+  await db.lead.deleteMany({
+    where: {
+      id: {
+        in: leadIds,
+      },
+    },
+  });
 
-//   // Reorder remaining tasks in each affected column
-//   await Promise.all(
-//     Object.keys(columnTaskMap).map(async (taskColumnId) => {
-//       const remainingTasks = await db.lead.findMany({
-//         where: { taskColumnId },
-//         orderBy: { order: "asc" },
-//       });
+  // Reorder remaining leads in each affected column
+  await Promise.all(
+    Object.keys(columnLeadMap).map(async (funnelColumnId) => {
+      const remainingLeads = await db.lead.findMany({
+        where: { funnelColumnId },
+        orderBy: { order: "asc" },
+      });
 
-//       await Promise.all(
-//         remainingTasks.map(async (task, index) => {
-//           return db.lead.update({
-//             where: { id: task.id },
-//             data: { order: index },
-//           });
-//         })
-//       );
-//     })
-//   );
+      await Promise.all(
+        remainingLeads.map(async (lead, index) => {
+          return db.lead.update({
+            where: { id: lead.id },
+            data: { order: index },
+          });
+        })
+      );
+    })
+  );
 
-//   revalidatePath("/tasks");
-//   return { success: true };
-// }
+  revalidatePath(`/funnels/${funnelId}`);
+  return { success: true };
+}

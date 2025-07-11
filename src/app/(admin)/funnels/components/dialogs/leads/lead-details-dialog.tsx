@@ -127,8 +127,8 @@ export default function LeadDetailsDialog({
       <DeleteConfirmDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title="Excluir Tarefa"
-        description="Tem certeza que deseja excluir esta tarefa? Esta ação não pode ser desfeita."
+        title="Excluir Lead"
+        description="Tem certeza que deseja excluir este lead? Esta ação não pode ser desfeita."
         onConfirm={handleDeletelead}
       />
     </>
